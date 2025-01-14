@@ -85,6 +85,7 @@ class GlslTypeReference(private val element: GlslType, textRange: TextRange) : G
         if (!element.isValid) return
 
         try {
+            currentFile = element.getRealVirtualFile()
             resolvedReferences.clear()
             currentFilterType = filterType
             resolveType()
