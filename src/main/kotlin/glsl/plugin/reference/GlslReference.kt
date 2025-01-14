@@ -1,6 +1,7 @@
 package glsl.plugin.reference
 
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
@@ -33,14 +34,13 @@ abstract class GlslReference(private val element: GlslIdentifier, textRange: Tex
     abstract fun doResolve(filterType: FilterType = EQUALS)
     abstract fun shouldResolve(): Boolean
     abstract fun resolveMany(): List<GlslNamedElement>
-    abstract fun lookupInExternalDeclaration(externalDeclaration: GlslExternalDeclaration?)
+    abstract fun lookupInExternalDeclaration(relativeTo: VirtualFile?, externalDeclaration: GlslExternalDeclaration?)
     abstract override fun resolve(): GlslNamedElement?
 
     protected var currentFilterType = EQUALS
     protected val project = element.project
     val resolvedReferences = arrayListOf<GlslNamedElement>()
     protected val includeFiles = mutableListOf<PsiFile>()
-    private lateinit var _currentFile: PsiFile
 
     /**
      *
@@ -119,12 +119,12 @@ abstract class GlslReference(private val element: GlslIdentifier, textRange: Tex
     /**
      *
      */
-    protected fun lookupInIncludeDeclaration(ppIncludeDeclaration: GlslPpIncludeDeclaration?) {
+    protected fun lookupInIncludeDeclaration(relativeTo: VirtualFile?, ppIncludeDeclaration: GlslPpIncludeDeclaration?) {
         if (ppIncludeDeclaration == null) return
         includeFiles.add(ppIncludeDeclaration.containingFile)
 
         val path = getPathStringFromInclude(ppIncludeDeclaration) ?: return
-        val vf = getVirtualFile(path, currentFile.virtualFile, project) ?: return
+        val vf = getVirtualFile(path, relativeTo, project) ?: return
         val psiFile = PsiManager.getInstance(project).findFile(vf) ?: return
 
         if (includeFiles.contains(psiFile)) {
@@ -133,19 +133,7 @@ abstract class GlslReference(private val element: GlslIdentifier, textRange: Tex
 
         val externalDeclarations = psiFile.childrenOfType<GlslExternalDeclaration>()
         for (externalDeclaration in externalDeclarations) {
-            lookupInExternalDeclaration(externalDeclaration)
+            lookupInExternalDeclaration(vf, externalDeclaration)
         }
     }
-
-
-    /**
-     *
-     */
-    private val currentFile: PsiFile
-        get() {
-            if (!::_currentFile.isInitialized) {
-                _currentFile = element.containingFile
-            }
-            return _currentFile
-        }
 }

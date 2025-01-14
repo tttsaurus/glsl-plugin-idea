@@ -3,6 +3,7 @@ package glsl.plugin.reference
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiInvalidElementAccessException
 import com.intellij.psi.impl.source.resolve.ResolveCache
@@ -123,7 +124,7 @@ class GlslVariableReference(private val element: GlslVariable, textRange: TextRa
     /**
      *
      */
-    override fun lookupInExternalDeclaration(externalDeclaration: GlslExternalDeclaration?) {
+    override fun lookupInExternalDeclaration(currentFile: VirtualFile?, externalDeclaration: GlslExternalDeclaration?) {
         if (externalDeclaration == null) return
         lookupInFunctionDeclarator(externalDeclaration.functionDefinition?.functionDeclarator, false)
         lookupInDeclaration(externalDeclaration.declaration)
@@ -137,7 +138,7 @@ class GlslVariableReference(private val element: GlslVariable, textRange: TextRa
         if (externalDeclaration == null) return
         var prevSibling = getPrevSiblingOfType(externalDeclaration, GlslExternalDeclaration::class.java)
         while (prevSibling != null) {
-            lookupInExternalDeclaration(prevSibling)
+            lookupInExternalDeclaration(currentFile, prevSibling)
             prevSibling = getPrevSiblingOfType(prevSibling, GlslExternalDeclaration::class.java)
         }
     }
@@ -268,7 +269,7 @@ class GlslVariableReference(private val element: GlslVariable, textRange: TextRa
      */
     private fun lookupInPpStatement(ppStatement: GlslPpStatement?) {
         if (ppStatement == null) return
-        lookupInIncludeDeclaration(ppStatement.ppIncludeDeclaration)
+        lookupInIncludeDeclaration(currentFile, ppStatement.ppIncludeDeclaration)
         findReferenceInElement(ppStatement.ppDefineObject)
         findReferenceInElement(ppStatement.ppDefineFunction)
     }
