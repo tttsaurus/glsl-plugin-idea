@@ -93,6 +93,7 @@ class GlslVariableReference(private val element: GlslVariable, textRange: TextRa
         if (!element.isValid) return
 
         try {
+            currentFile = element.getRealVirtualFile()
             resolvedReferences.clear()
             currentFilterType = filterType
             lookupInPostfixStructMember()
