@@ -13,11 +13,14 @@ import glsl.plugin.psi.GlslType
 import glsl.plugin.psi.named.GlslNamedElement
 import glsl.plugin.psi.named.GlslNamedType
 import glsl.plugin.reference.FilterType.CONTAINS
+import glsl.plugin.utils.GlslUtils.getRealVirtualFile
 import glsl.psi.interfaces.GlslDeclaration
 import glsl.psi.interfaces.GlslExternalDeclaration
 import glsl.psi.interfaces.GlslStatement
 
 class GlslTypeReference(private val element: GlslType, textRange: TextRange) : GlslReference(element, textRange) {
+
+    private var currentFile: VirtualFile? = null
 
     private val resolver = AbstractResolver<GlslTypeReference, GlslNamedType> { reference, _ ->
         val project = reference.element.project
@@ -38,6 +41,7 @@ class GlslTypeReference(private val element: GlslType, textRange: TextRange) : G
             if (!element.isValid) return null
 
             if (!shouldResolve()) return null
+            currentFile = element.getRealVirtualFile()
             val resolveCache = ResolveCache.getInstance(project)
             return resolveCache.resolveWithCaching(this, resolver, true, false)
         } catch (e: Throwable) {
