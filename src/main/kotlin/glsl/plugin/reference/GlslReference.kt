@@ -18,6 +18,7 @@ import glsl.psi.interfaces.GlslExternalDeclaration
 import glsl.psi.interfaces.GlslFunctionDefinition
 import glsl.psi.interfaces.GlslPpIncludeDeclaration
 import glsl.psi.interfaces.GlslStatement
+import java.util.Stack
 
 
 class StopLookupException : Exception()
@@ -40,7 +41,7 @@ abstract class GlslReference(private val element: GlslIdentifier, textRange: Tex
     protected var currentFilterType = EQUALS
     protected val project = element.project
     val resolvedReferences = arrayListOf<GlslNamedElement>()
-    protected val includeFiles = mutableListOf<PsiFile>()
+    protected val includedFilesStack = Stack<PsiFile>()
 
     /**
      *
@@ -121,19 +122,25 @@ abstract class GlslReference(private val element: GlslIdentifier, textRange: Tex
      */
     protected fun lookupInIncludeDeclaration(relativeTo: VirtualFile?, ppIncludeDeclaration: GlslPpIncludeDeclaration?) {
         if (ppIncludeDeclaration == null) return
-        includeFiles.add(ppIncludeDeclaration.containingFile)
+        includedFilesStack.push(ppIncludeDeclaration.containingFile)
+        val pos = includedFilesStack.size
+        try {
+            val path = getPathStringFromInclude(ppIncludeDeclaration) ?: return
+            val vf = getVirtualFile(path, relativeTo, project) ?: return
+            val psiFile = PsiManager.getInstance(project).findFile(vf) ?: return
 
-        val path = getPathStringFromInclude(ppIncludeDeclaration) ?: return
-        val vf = getVirtualFile(path, relativeTo, project) ?: return
-        val psiFile = PsiManager.getInstance(project).findFile(vf) ?: return
+            if (includedFilesStack.contains(psiFile)) {
+                return
+            }
 
-        if (includeFiles.contains(psiFile)) {
-            throw StopLookupException()
-        }
-
-        val externalDeclarations = psiFile.childrenOfType<GlslExternalDeclaration>()
-        for (externalDeclaration in externalDeclarations) {
-            lookupInExternalDeclaration(vf, externalDeclaration)
+            val externalDeclarations = psiFile.childrenOfType<GlslExternalDeclaration>()
+            for (externalDeclaration in externalDeclarations) {
+                lookupInExternalDeclaration(vf, externalDeclaration)
+            }
+        } finally {
+            if (includedFilesStack.size != pos)
+                throw StopLookupException()
+            includedFilesStack.pop()
         }
     }
 }

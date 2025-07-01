@@ -111,7 +111,7 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         } catch (_: PsiInvalidElementAccessException) {
             includeFiles.clear()
         } catch (_: StopLookupException) {
-            includeFiles.clear()
+            includedFilesStack.clear()
         }
     }
 
