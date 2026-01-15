@@ -1,7 +1,9 @@
 package glsl.plugin.reference
 
 import com.intellij.codeInsight.lookup.LookupElement
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.PsiInvalidElementAccessException
 import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.impl.source.resolve.ResolveCache.AbstractResolver
 import com.intellij.psi.util.PsiTreeUtil.getParentOfType
@@ -17,6 +19,10 @@ import glsl.psi.interfaces.GlslStatement
 class GlslTypeReference(private val element: GlslType, textRange: TextRange) : GlslReference(element, textRange) {
 
     private val resolver = AbstractResolver<GlslTypeReference, GlslNamedType> { reference, _ ->
+        val project = reference.element.project
+        if (project.isDisposed) return@AbstractResolver null
+        if (!reference.element.isValid) return@AbstractResolver null
+
         reference.doResolve()
         reference.resolvedReferences.firstOrNull() as? GlslNamedType
     }
@@ -25,15 +31,28 @@ class GlslTypeReference(private val element: GlslType, textRange: TextRange) : G
      *
      */
     override fun resolve(): GlslNamedType? {
-        if (!shouldResolve()) return null
-        val resolveCache = ResolveCache.getInstance(project)
-        return resolveCache.resolveWithCaching(this, resolver, true, false)
+        return try {
+            val project = element.project
+            if (project.isDisposed) return null
+            if (!element.isValid) return null
+
+            if (!shouldResolve()) return null
+            val resolveCache = ResolveCache.getInstance(project)
+            return resolveCache.resolveWithCaching(this, resolver, true, false)
+        } catch (e: Throwable) {
+            if (e is ProcessCanceledException) throw e
+            null
+        }
     }
 
     /**
      *
      */
     override fun getVariants(): Array<LookupElement> {
+        val project = element.project
+        if (project.isDisposed) return emptyArray()
+        if (!element.isValid) return emptyArray()
+
         doResolve(CONTAINS)
         return resolvedReferences.mapNotNull { it.getLookupElement() }.toTypedArray()
     }
@@ -41,11 +60,31 @@ class GlslTypeReference(private val element: GlslType, textRange: TextRange) : G
     /**
      *
      */
+    override fun resolveMany(): List<GlslNamedElement> {
+        val project = element.project
+        if (project.isDisposed) return emptyList()
+        if (!element.isValid) return emptyList()
+
+        if (!shouldResolve()) return emptyList()
+        val resolveCache = ResolveCache.getInstance(project)
+        resolveCache.resolveWithCaching(this, resolver, true, false)
+        return resolvedReferences
+    }
+
+    /**
+     *
+     */
     override fun doResolve(filterType: FilterType) {
+        val project = element.project
+        if (project.isDisposed) return
+        if (!element.isValid) return
+
         try {
             resolvedReferences.clear()
             currentFilterType = filterType
             resolveType()
+        } catch (_: PsiInvalidElementAccessException) {
+            includeFiles.clear()
         } catch (_: StopLookupException) {
             includeFiles.clear()
         }
@@ -57,16 +96,6 @@ class GlslTypeReference(private val element: GlslType, textRange: TextRange) : G
     override fun shouldResolve(): Boolean {
         if (currentFilterType == CONTAINS && element.isEmpty()) return true
         return element.getDeclaration() == null
-    }
-
-    /**
-     *
-     */
-    override fun resolveMany(): List<GlslNamedElement> {
-        if (!shouldResolve()) return emptyList()
-        val resolveCache = ResolveCache.getInstance(project)
-        resolveCache.resolveWithCaching(this, resolver, true, false)
-        return resolvedReferences
     }
 
     /**
