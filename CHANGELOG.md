@@ -1,5 +1,12 @@
 # GLSL Plugin Changelog
 
+## [1.1.6-hotfix2]
+### Fixed
+- Prevent `GlslPsiBuilder` stack overflow
+- Add macro placeholder (`#define M {placeholder}`) as a valid element
+- Add the ability to invalidate caches to `GlslBuiltinUtils`
+- Fix macro parsing (used to result `PsiErrorElement` in the PSI tree)
+
 ## [1.1.6-hotfix1]
 ### Fixed
 - Add additional defensive guards around PSI resolve paths to fix `com.intellij.diagnostic.PluginException: Invalid PSI Element`
