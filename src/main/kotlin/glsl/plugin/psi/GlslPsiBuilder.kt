@@ -58,7 +58,7 @@ class GlslPsiBuilder(builder: PsiBuilder, state: GeneratedParserUtilBase.ErrorSt
                     } else {
                         super.advanceLexer()
                     }
-                    myTokenType = super.getTokenType() // Closing parenthesis
+                    myTokenType = super.getTokenType()
                 }
                 super.advanceLexer()
                 exit_section_(this, marker, MACRO_FUNC_CALL_PARAMS_BLOCK, true)

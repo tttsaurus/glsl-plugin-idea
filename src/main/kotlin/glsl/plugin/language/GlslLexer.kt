@@ -10,6 +10,7 @@ import glsl.GlslTypes.*
 import glsl._GlslLexer
 import glsl._GlslLexer.*
 import glsl.data.GlslTokenSets.IGNORE_MACRO_BODY_TOKEN
+import glsl.data.GlslTokenSets.ALL_OPERATORS
 import glsl.plugin.utils.GlslUtils.getVirtualFile
 
 /**
@@ -22,6 +23,7 @@ class GlslMacro(val name: String, val macroDefineType: IElementType) {
 }
 
 private const val RECURSION_LEVEL_LIMIT = 50000
+private const val DUMMY_IDENTIFIER = "__GlslPluginDummyIdentifier__"
 
 /**
  *
@@ -48,6 +50,32 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
     private var macroFunc: GlslMacro? = null
 
     private var recursionLevel = 0
+
+    private fun createDummyExpansion(): GlslMacro {
+        return GlslMacro(DUMMY_IDENTIFIER, MACRO_OBJECT).apply {
+            elements.add(Pair(DUMMY_IDENTIFIER, IDENTIFIER))
+        }
+    }
+
+    private fun shouldExpandFunctionMacro(macro: GlslMacro?): Boolean {
+        val firstTokenType = macro?.elements?.firstOrNull()?.second ?: return false
+        return firstTokenType in ALL_OPERATORS || firstTokenType in setOf(
+            LAYOUT,
+            CONST,
+            INOUT,
+            IN,
+            OUT,
+            CENTROID,
+            UNIFORM,
+            SHARED,
+            BUFFER,
+            ATTR,
+            VARYING,
+            PATCH,
+            SAMPLE,
+            STRUCT
+        )
+    }
 
     /**
      *
@@ -200,6 +228,8 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
             }
         } else {
             macroExpansion = null
+            macroFuncCallParams = null
+            paramExpansionIter = null
             advanceLexer()
         }
     }
@@ -253,9 +283,14 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
         }
 
         if (macroParamNestingLevel == 0) {
-            macroExpansion = macroFunc
+            val shouldExpand = shouldExpandFunctionMacro(macroFunc)
+            macroExpansion = if (shouldExpand) macroFunc else createDummyExpansion()
             macroExpansion!!.macroExpansionIter = macroExpansion?.elements?.iterator()
             inMacroFuncCall = false
+            if (!shouldExpand) {
+                macroFuncCallParams = null
+                paramExpansionIter = null
+            }
             macroFunc = null
             myTokenType = RIGHT_PAREN_MACRO_CALL
         }
