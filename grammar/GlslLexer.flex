@@ -59,6 +59,7 @@ DOUBLECONSTANT=({FRACTIONAL}|{FRACTIONAL2}){FLOATING_SUFFIX_DOUBLE}?
 BOOLCONSTANT=false|true
 STRING_LITERAL=(\"([^\"\\]|\\.)*\")
 IDENTIFIER=[a-zA-Z_]+\w*
+MACRO_PLACEHOLDER="{"{IDENTIFIER}"}"
 PP_VERSION="#version"
 PP_DEFINE="#define"
 PP_UNDEF="#undef"
@@ -143,6 +144,7 @@ INCLUDE_PATH={IDENTIFIER}([\s\/]*{IDENTIFIER}\s*)*(\.{IDENTIFIER})?
   {PP_PRAGMA}                      { yybegin(MACRO_IGNORE_STATE); return PP_PRAGMA;}
   {PP_INCLUDE}                     { yybegin(MACRO_INCLUDE_STATE); return PP_INCLUDE;}
   {PP_DEFINE}                      { yybegin(MACRO_IDENTIFIER_STATE); return PP_DEFINE;}
+  {MACRO_PLACEHOLDER}              { afterType = false; afterStruct = false; return MACRO_PLACEHOLDER; }
 
   ";"                              { afterType = false; return SEMICOLON; }
   ","                              { afterType = false; return COMMA; }

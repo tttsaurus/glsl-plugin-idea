@@ -25,6 +25,7 @@ private val DESCRIPTORS = arrayOf(
     AttributesDescriptor("Preprocessor directive", GlslTextAttributes.PREPROCESSOR_TEXT_ATTR),
     AttributesDescriptor("Macro // Object name", GlslTextAttributes.MACRO_OBJECT_NAME_ATTR),
     AttributesDescriptor("Macro // Function name", GlslTextAttributes.MACRO_FUNC_NAME_ATTR),
+    AttributesDescriptor("Macro // Placeholder", GlslTextAttributes.MACRO_PLACEHOLDER_ATTR),
     AttributesDescriptor("Operators", GlslTextAttributes.OPERATORS_TEXT_ATTR),
     AttributesDescriptor("Bad character", GlslTextAttributes.BAD_CHARACTER_TEXT_ATTR),
 )
@@ -40,6 +41,7 @@ private val ADDITIONAL_DESCRIPTORS = mutableMapOf(
     "pp" to GlslTextAttributes.PREPROCESSOR_TEXT_ATTR,
     "mo" to GlslTextAttributes.MACRO_OBJECT_NAME_ATTR,
     "mf" to GlslTextAttributes.MACRO_FUNC_NAME_ATTR,
+    "mph" to GlslTextAttributes.MACRO_PLACEHOLDER_ATTR,
 )
 
 

@@ -81,6 +81,7 @@
         MACRO_LINE="__LINE__"
         MACRO_FILE="__FILE__"
         MACRO_VERSION="__VERSION__"
+        MACRO_PLACEHOLDER='regexp:[{][a-zA-Z_][a-zA-Z_0-9]*[}]'
         SEMICOLON=";"
         COMMA=","
         COLON=":"
@@ -766,6 +767,7 @@ primary_expr
     |   MACRO_LINE
     |   MACRO_FILE
     |   MACRO_VERSION
+    |   macro_placeholder_expr
 
 unary_expr
     ::= (INC_OP | DEC_OP) postfix_expr
@@ -1483,6 +1485,9 @@ meta macro_call
     |   MACRO_FUNCTION_CALL
     |   RIGHT_PAREN_MACRO_CALL
     |   LEFT_PAREN_MACRO_CALL
+
+macro_placeholder_expr
+    ::= MACRO_PLACEHOLDER
 
 pp_define_object
     ::= PP_DEFINE <<macroIdentifierObject>> <<macroBodyToken>>*

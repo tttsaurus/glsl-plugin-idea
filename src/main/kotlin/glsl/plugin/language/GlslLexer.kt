@@ -180,8 +180,6 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
             myTokenType = MACRO_FUNCTION_CALL
         } else if (macro.macroDefineType == MACRO_OBJECT) {
             myTokenType = MACRO_OBJECT_CALL
-            macroExpansion = macro
-            macroExpansion!!.macroExpansionIter = macroExpansion?.elements?.iterator()
         }
     }
 

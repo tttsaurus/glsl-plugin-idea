@@ -13,6 +13,8 @@ import glsl.data.GlslTokenSets.IDENTIFIERS
  *
  */
 class GlslPsiBuilder(builder: PsiBuilder, state: GeneratedParserUtilBase.ErrorState, parser: _GlslParser) : GeneratedParserUtilBase.Builder(builder, state, parser) {
+    private var isExpandingMacroCall = false
+
     /**
      *
      */
@@ -33,33 +35,36 @@ class GlslPsiBuilder(builder: PsiBuilder, state: GeneratedParserUtilBase.ErrorSt
      *
      */
     private fun macroCall() {
-        var myTokenType = super.getTokenType()
-        if (myTokenType == MACRO_OBJECT_CALL) {
-            val marker = enter_section_(this)
-            super.advanceLexer() // Opening parenthesis
-            exit_section_(this, marker, VARIABLE_IDENTIFIER, true)
-        } else if (myTokenType == MACRO_FUNCTION_CALL) {
-            var marker = enter_section_(this)
-            super.advanceLexer()
-            exit_section_(this, marker, VARIABLE_IDENTIFIER, true)
+        if (isExpandingMacroCall) return
 
-            myTokenType = super.getTokenType()
-            if (myTokenType != LEFT_PAREN_MACRO_CALL) return
+        isExpandingMacroCall = true
+        try {
+            var myTokenType = super.getTokenType()
+            if (myTokenType == MACRO_FUNCTION_CALL) {
+                var marker = enter_section_(this)
+                super.advanceLexer()
+                exit_section_(this, marker, VARIABLE_IDENTIFIER, true)
 
-            marker = enter_section_(this)
-            while (true) {
-                if (myTokenType == null || myTokenType == RIGHT_PAREN_MACRO_CALL) break
-                if (myTokenType in IDENTIFIERS) {
-                    val identifierMarker = enter_section_(this)
-                    super.advanceLexer()
-                    exit_section_(this, identifierMarker, VARIABLE_IDENTIFIER, true)
-                } else {
-                    super.advanceLexer()
+                myTokenType = super.getTokenType()
+                if (myTokenType != LEFT_PAREN_MACRO_CALL) return
+
+                marker = enter_section_(this)
+                while (true) {
+                    if (myTokenType == null || myTokenType == RIGHT_PAREN_MACRO_CALL) break
+                    if (myTokenType in IDENTIFIERS) {
+                        val identifierMarker = enter_section_(this)
+                        super.advanceLexer()
+                        exit_section_(this, identifierMarker, VARIABLE_IDENTIFIER, true)
+                    } else {
+                        super.advanceLexer()
+                    }
+                    myTokenType = super.getTokenType() // Closing parenthesis
                 }
-                myTokenType = super.getTokenType() // Closing parenthesis
+                super.advanceLexer()
+                exit_section_(this, marker, MACRO_FUNC_CALL_PARAMS_BLOCK, true)
             }
-            super.advanceLexer()
-            exit_section_(this, marker, MACRO_FUNC_CALL_PARAMS_BLOCK, true)
+        } finally {
+            isExpandingMacroCall = false
         }
     }
 }

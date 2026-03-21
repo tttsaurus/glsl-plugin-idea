@@ -49,6 +49,7 @@ DOUBLECONSTANT=({FRACTIONAL}|{FRACTIONAL2}){FLOATING_SUFFIX_DOUBLE}?
 BOOLCONSTANT=false|true
 STRING_LITERAL=(\"([^\"\\]|\\.)*\")
 IDENTIFIER=[a-zA-Z_]+\w*
+MACRO_PLACEHOLDER="{"{IDENTIFIER}"}"
 PP_VERSION="#version"
 PP_DEFINE="#define"
 PP_UNDEF="#undef"
@@ -101,6 +102,7 @@ MACRO_VERSION="__VERSION__"
   {PP_ERROR}                       { return PP_ERROR; }
   {PP_PRAGMA}                      { return PP_PRAGMA; }
   "#"                              { return HASH; }
+  {MACRO_PLACEHOLDER}              { return MACRO_PLACEHOLDER; }
 
 
   ";"                              { return SEMICOLON; }

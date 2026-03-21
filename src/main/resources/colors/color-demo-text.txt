@@ -7,6 +7,7 @@ out vec3 <v>v_uv</v>;
 
 <pp>#define</pp> <mf>add</mf>(x, y) x + y
 <pp>#define</pp> <mo>PI</mo> 3.14
+<pp>#define</pp> <mo>BINDING</mo> <mph>{storage_binding}</mph>
 
 uniform mat4 <v>model</v>;
 uniform mat4 <v>view</v>;

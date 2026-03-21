@@ -23,6 +23,7 @@ import glsl.plugin.editor.highlighting.GlslTextAttributes.FUNC_PARAM_TEXT_ATTR
 import glsl.plugin.editor.highlighting.GlslTextAttributes.KEYWORD_TEXT_ATTR
 import glsl.plugin.editor.highlighting.GlslTextAttributes.LINE_COMMENT_TEXT_ATTR
 import glsl.plugin.editor.highlighting.GlslTextAttributes.MACRO_FUNC_NAME_ATTR
+import glsl.plugin.editor.highlighting.GlslTextAttributes.MACRO_PLACEHOLDER_ATTR
 import glsl.plugin.editor.highlighting.GlslTextAttributes.MACRO_OBJECT_NAME_ATTR
 import glsl.plugin.editor.highlighting.GlslTextAttributes.MULTILINE_COMMENT_TEXT_ATTR
 import glsl.plugin.editor.highlighting.GlslTextAttributes.NUMBERS_TEXT_ATTR
@@ -60,6 +61,7 @@ class GlslSyntaxHighlighter : SyntaxHighlighterBase() {
             GlslTypes.BOOLCONSTANT -> BOOLEAN_TEXT_ATTR
             GlslTypes.MACRO_OBJECT -> MACRO_OBJECT_NAME_ATTR
             GlslTypes.MACRO_FUNCTION -> MACRO_FUNC_NAME_ATTR
+            GlslTypes.MACRO_PLACEHOLDER -> MACRO_PLACEHOLDER_ATTR
             GlslTypes.MACRO_FUNC_PARAM -> FUNC_PARAM_TEXT_ATTR
             in GlslTokenSets.ALL_OPERATORS -> OPERATORS_TEXT_ATTR
             in GlslTokenSets.PREPROCESSORS -> PREPROCESSOR_TEXT_ATTR
@@ -86,6 +88,7 @@ object GlslTextAttributes {
     val PREPROCESSOR_TEXT_ATTR = createTextAttributesKey("GLSL_PREPROCESSOR", KEYWORD)
     val MACRO_OBJECT_NAME_ATTR = createTextAttributesKey("GLSL_MACRO_OBJECT_NAME", IDENTIFIER)
     val MACRO_FUNC_NAME_ATTR = createTextAttributesKey("GLSL_MACRO_FUNC_NAME", FUNCTION_CALL)
+    val MACRO_PLACEHOLDER_ATTR = createTextAttributesKey("GLSL_MACRO_PLACEHOLDER", CONSTANT)
     val STRUCT_TYPE_TEXT_ATTR = createTextAttributesKey("GLSL_STRUCT_IDENTIFIER", CLASS_REFERENCE)
     val NUMBERS_TEXT_ATTR = createTextAttributesKey("GLSL_NUMBER", NUMBER)
     val KEYWORD_TEXT_ATTR = createTextAttributesKey("GLSL_KEYWORD", KEYWORD)
