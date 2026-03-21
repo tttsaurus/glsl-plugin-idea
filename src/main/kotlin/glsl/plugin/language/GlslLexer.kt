@@ -25,6 +25,12 @@ class GlslMacro(val name: String, val macroDefineType: IElementType) {
 private const val RECURSION_LEVEL_LIMIT = 50000
 private const val DUMMY_IDENTIFIER = "__GlslPluginDummyIdentifier__"
 
+private enum class MacroExpansionMode {
+    DUMMY_IDENTIFIER,
+    DECLARATION_TERMINATOR,
+    REAL_EXPANSION
+}
+
 /**
  *
  */
@@ -57,9 +63,16 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
         }
     }
 
-    private fun shouldExpandFunctionMacro(macro: GlslMacro?): Boolean {
-        val firstTokenType = macro?.elements?.firstOrNull()?.second ?: return false
-        return firstTokenType in ALL_OPERATORS || firstTokenType in setOf(
+    private fun createDeclarationTerminatorExpansion(): GlslMacro {
+        return GlslMacro(";", MACRO_OBJECT).apply {
+            elements.add(Pair(";", SEMICOLON))
+        }
+    }
+
+    private fun getFunctionMacroExpansionMode(macro: GlslMacro?): MacroExpansionMode {
+        val firstTokenType = macro?.elements?.firstOrNull()?.second ?: return MacroExpansionMode.DUMMY_IDENTIFIER
+        if (firstTokenType in ALL_OPERATORS) return MacroExpansionMode.REAL_EXPANSION
+        if (firstTokenType in setOf(
             LAYOUT,
             CONST,
             INOUT,
@@ -74,7 +87,10 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
             PATCH,
             SAMPLE,
             STRUCT
-        )
+        )) {
+            return MacroExpansionMode.DECLARATION_TERMINATOR
+        }
+        return MacroExpansionMode.DUMMY_IDENTIFIER
     }
 
     /**
@@ -224,7 +240,8 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
             myTokenType = nextMacroToken.second
             if (myTokenText in macroExpansion!!.params) {
                 paramExpansionIter = macroFuncCallParams?.get(myTokenText)?.iterator()
-                myTokenType = paramExpansionIter?.next()
+                val nextParamToken = paramExpansionIter?.next()
+                myTokenType = nextParamToken
             }
         } else {
             macroExpansion = null
@@ -283,11 +300,15 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
         }
 
         if (macroParamNestingLevel == 0) {
-            val shouldExpand = shouldExpandFunctionMacro(macroFunc)
-            macroExpansion = if (shouldExpand) macroFunc else createDummyExpansion()
+            val expansionMode = getFunctionMacroExpansionMode(macroFunc)
+            macroExpansion = when (expansionMode) {
+                MacroExpansionMode.REAL_EXPANSION -> macroFunc
+                MacroExpansionMode.DECLARATION_TERMINATOR -> createDeclarationTerminatorExpansion()
+                MacroExpansionMode.DUMMY_IDENTIFIER -> createDummyExpansion()
+            }
             macroExpansion!!.macroExpansionIter = macroExpansion?.elements?.iterator()
             inMacroFuncCall = false
-            if (!shouldExpand) {
+            if (expansionMode != MacroExpansionMode.REAL_EXPANSION) {
                 macroFuncCallParams = null
                 paramExpansionIter = null
             }
