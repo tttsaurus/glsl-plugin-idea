@@ -1,6 +1,7 @@
 package glsl.plugin.utils
 
 import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.util.PsiTreeUtil.findChildOfType
 import com.intellij.psi.util.PsiTreeUtil.findChildrenOfType
@@ -21,11 +22,28 @@ import java.util.*
 
 object GlslBuiltinUtils {
 
-    private lateinit var vecStructs: Map<String, Map<String, GlslNamedVariable>>
-    private lateinit var builtinConstants: Map<String, GlslNamedVariable>
-    private lateinit var defaultShaderVariables: Map<String, GlslNamedVariable>
-    private lateinit var shaderVariables: EnumMap<ShaderType, Map<String, GlslNamedVariable>>
-    private lateinit var builtinFuncs: Map<String, List<GlslFunctionDeclarator>>
+    private var cacheProject: Project? = null
+    private var vecStructs: Map<String, Map<String, GlslNamedVariable>>? = null
+    private var builtinConstants: Map<String, GlslNamedVariable>? = null
+    private var defaultShaderVariables: Map<String, GlslNamedVariable>? = null
+    private var shaderVariables: EnumMap<ShaderType, Map<String, GlslNamedVariable>>? = null
+    private var builtinFuncs: Map<String, List<GlslFunctionDeclarator>>? = null
+
+    private fun currentProject(): Project {
+        return ProjectManager.getInstance().openProjects.firstOrNull { !it.isDisposed }
+            ?: ProjectManager.getInstance().defaultProject
+    }
+
+    private fun invalidateCachesIfNeeded() {
+        val project = currentProject()
+        if (cacheProject === project && !project.isDisposed) return
+        cacheProject = project
+        vecStructs = null
+        builtinConstants = null
+        defaultShaderVariables = null
+        shaderVariables = null
+        builtinFuncs = null
+    }
 
     /**
      * Creates a map of the GLSL builtin functions with their name as a key and a list of their AST
@@ -33,8 +51,9 @@ object GlslBuiltinUtils {
      * Therefore, we want to create a list of them and show all possible signatures to the user.
      */
     fun getBuiltinFuncs(): Map<String, List<GlslFunctionDeclarator>> {
-        if (::builtinFuncs.isInitialized) {
-            return builtinFuncs
+        invalidateCachesIfNeeded()
+        builtinFuncs?.let {
+            return it
         }
         val funcs = mutableMapOf<String, MutableList<GlslFunctionDeclarator>>()
         val builtinFile = getBuiltinFile("glsl-builtin-functions")
@@ -56,8 +75,9 @@ object GlslBuiltinUtils {
      *
      */
     fun getVecStructs(): Map<String, Map<String, GlslNamedVariable>> {
-        if (::vecStructs.isInitialized) {
-            return vecStructs
+        invalidateCachesIfNeeded()
+        vecStructs?.let {
+            return it
         }
         val builtinFile = getBuiltinFile("glsl-vector-structs")
         val structSpecifiers = findChildrenOfType(builtinFile, GlslStructSpecifier::class.java).toList()
@@ -83,8 +103,9 @@ object GlslBuiltinUtils {
      *
      */
     fun getBuiltinConstants(): Map<String, GlslNamedVariable> {
-        if (::builtinConstants.isInitialized) {
-            return builtinConstants
+        invalidateCachesIfNeeded()
+        builtinConstants?.let {
+            return it
         }
         val builtinFile = getBuiltinFile("glsl-builtin-constants")
         val singleDeclarations = findChildrenOfType(builtinFile, GlslSingleDeclaration::class.java).toList()
@@ -100,14 +121,15 @@ object GlslBuiltinUtils {
     }
 
     fun getShaderVariables(fileExtension: String? = null): Map<String, GlslNamedVariable> {
-        if (!::defaultShaderVariables.isInitialized || !::shaderVariables.isInitialized) {
+        invalidateCachesIfNeeded()
+        if (defaultShaderVariables == null || shaderVariables == null) {
             setShaderVariables()
         }
         val shaderType = getShaderType(fileExtension)
         if (shaderType == GLSL) {
-            return defaultShaderVariables
+            return defaultShaderVariables ?: emptyMap()
         }
-        return shaderVariables[shaderType] ?: emptyMap()
+        return shaderVariables?.get(shaderType) ?: emptyMap()
     }
 
     /**
@@ -117,7 +139,7 @@ object GlslBuiltinUtils {
         val shaderVariablesFile = getBuiltinFile("glsl-shader-variables")
         val structSpecifiers = findChildrenOfType(shaderVariablesFile, GlslStructSpecifier::class.java).filter { it.findParentOfType<GlslStructSpecifier>() == null }.toList()
         // Initializes map with ShaderType enum
-        shaderVariables = EnumMap(ShaderType::class.java)
+        val shaderVariablesMap = EnumMap<ShaderType, Map<String, GlslNamedVariable>>(ShaderType::class.java)
         val allShaderVariables = hashMapOf<String, GlslNamedVariable>()
         for (structSpecifier in structSpecifiers) {
             val namedStruct = structSpecifier as GlslNamedStructSpecifier
@@ -128,8 +150,9 @@ object GlslBuiltinUtils {
                 allShaderVariables[memberName] = structMember
             }
             val shaderType = getShaderType(namedStruct.name)
-            shaderVariables[shaderType] = structDeclarators
+            shaderVariablesMap[shaderType] = structDeclarators
         }
+        shaderVariables = shaderVariablesMap
         defaultShaderVariables = allShaderVariables
     }
 
@@ -161,17 +184,18 @@ object GlslBuiltinUtils {
      */
     fun isBuiltinShaderVariable(variable: String, fileExtension: String?): Boolean {
         if (fileExtension == null) return false
-        if (!::defaultShaderVariables.isInitialized || !::shaderVariables.isInitialized) {
+        invalidateCachesIfNeeded()
+        if (defaultShaderVariables == null || shaderVariables == null) {
             setShaderVariables()
         }
         fun isAinB(a: String, b: Map<String, GlslNamedElement>?): Boolean = if (b != null) a in b.keys else false
         return when (val shaderType = getShaderType(fileExtension)) {
-            VERT -> isAinB(variable, shaderVariables[shaderType])
-            GEOM -> isAinB(variable, shaderVariables[shaderType])
-            FRAG -> isAinB(variable, shaderVariables[shaderType])
-            TESC -> isAinB(variable, shaderVariables[shaderType])
-            TESE -> isAinB(variable, shaderVariables[shaderType])
-            COMP -> isAinB(variable, shaderVariables[shaderType])
+            VERT -> isAinB(variable, shaderVariables?.get(shaderType))
+            GEOM -> isAinB(variable, shaderVariables?.get(shaderType))
+            FRAG -> isAinB(variable, shaderVariables?.get(shaderType))
+            TESC -> isAinB(variable, shaderVariables?.get(shaderType))
+            TESE -> isAinB(variable, shaderVariables?.get(shaderType))
+            COMP -> isAinB(variable, shaderVariables?.get(shaderType))
             GLSL -> isAinB(variable, defaultShaderVariables)
         }
     }
@@ -180,7 +204,7 @@ object GlslBuiltinUtils {
      *
      */
     private fun getBuiltinFile(fileName: String): GlslFile? {
-        val project = ProjectManager.getInstance().openProjects.firstOrNull()
+        val project = currentProject()
         val funcsString = getResourceFileAsString("builtin-objects/$fileName.glsl") ?: return null
         val fileFactory = PsiFileFactory.getInstance(project)
         val glslFile = fileFactory.createFileFromText(fileName, GlslFileType(), funcsString) as? GlslFile
