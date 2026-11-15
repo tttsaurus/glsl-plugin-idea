@@ -1,11 +1,47 @@
-> This fork aims to provide patches to fix bugs/runtime exceptions
+> This fork aims to provide patches to fix bugs/runtime exceptions.
 
-## Build & Run
-Assuming you're developing with Intellij (and you want to develop with Intellij):
-1. **Generate grammar**. Execute the `generateGrammarClean` task from _gradle.build_ file or under _Tasks/other_ if you use the Gradle tab. 
-2. **Run**. Execute the `runIde` task (Intellij will build the project and then run the instance).
+## Development environment
 
-\* If you're only interested in building the project without running it you can use task `buildPlugin` after step 1.
+Use JDK 25 for development and the Gradle JVM in IntelliJ IDEA.
+The plugin compiles against IntelliJ IDEA Community 2025.1 and emits Java 21
+bytecode for IDEs starting at build 242 (2024.2). The sandbox uses the IDE's
+bundled JetBrains Runtime.
 
-## Test
-Just execute the `test` task from the Gradle tab or run specific classes or tests from within the ide.
+Build versions and plugin metadata are in `gradle.properties`. Dependency and
+Gradle plugin versions are in `gradle/libs.versions.toml`.
+
+## Build and run
+
+```sh
+./gradlew buildPlugin
+./gradlew runIde
+```
+
+Both commands generate the parser, PSI and lexers automatically. 
+
+To clean and regenerate just the grammar sources, run `./gradlew generateGrammarClean`.
+
+## Test and verify
+
+```sh
+./gradlew check
+./gradlew verifyPlugin
+```
+
+`check` runs the tests and generates a Kover coverage report at `build/reports/kover/report.xml`.
+
+`verifyPlugin` uses these IntelliJ IDEA Community targets:
+- 2025.2.6.2
+- 2025.1.7.1
+- 2024.3.7.1
+- 2024.2.6
+
+Verifier reports are written under `build/reports/pluginVerifier`.
+
+GitHub Actions builds, tests and verifies the plugin with JDK 25, and uploads the
+plugin archive and verification reports.
+
+## Publishing
+
+`./gradlew publishPlugin` uses `PUBLISH_TOKEN`. To sign the plugin, also set
+`CERTIFICATE_CHAIN`, `PRIVATE_KEY` and `PRIVATE_KEY_PASSWORD`.
