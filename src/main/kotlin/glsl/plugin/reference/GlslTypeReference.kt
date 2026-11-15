@@ -97,7 +97,7 @@ class GlslTypeReference(private val element: GlslType, textRange: TextRange) : G
             }
             resolveType()
         } catch (_: PsiInvalidElementAccessException) {
-            includeFiles.clear()
+            includedFilesStack.clear()
         } catch (_: StopLookupException) {
             includedFilesStack.clear()
         }

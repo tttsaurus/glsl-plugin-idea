@@ -4,15 +4,14 @@ import com.intellij.codeInsight.completion.CompletionParameters
 import com.intellij.codeInsight.completion.CompletionProvider
 import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.completion.InsertHandler
-import com.intellij.codeInsight.completion.PlainPrefixMatcher
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.TokenType
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.prevLeaf
-import com.intellij.refactoring.suggested.endOffset
-import com.intellij.refactoring.suggested.startOffset
+import com.intellij.psi.util.endOffset
+import com.intellij.psi.util.startOffset
 import com.intellij.util.ProcessingContext
 import glsl.GlslTypes
 import glsl.data.GlslDefinitions
@@ -135,6 +134,7 @@ class GlslIncludeStatementCompletion : GlslCompletionProvider() {
         val elem = context.file.findElementAt(context.startOffset)
         if (elem != null && elem.elementType == GlslTypes.STRING_LITERAL) {
             context.document.replaceString(elem.startOffset + 1, elem.endOffset - 1, s)
+            context.editor.caretModel.moveToOffset(elem.startOffset + 1 + s.length)
         } else {
             context.document.replaceString(context.startOffset, context.selectionEndOffset, s)
             context.editor.caretModel.moveToOffset(context.startOffset + s.length)
@@ -146,13 +146,13 @@ class GlslIncludeStatementCompletion : GlslCompletionProvider() {
      */
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, resultSet: CompletionResultSet) {
         val virtualFile = parameters.originalFile.getRealVirtualFile() ?: return
-        var path = parameters.position.text.trim('"', ' ').replace("IntellijIdeaRulezzz", "")
-        if (path.startsWith('/')) return
+        val token = parameters.position
+        val prefixLength = (parameters.offset - token.textOffset).coerceIn(0, token.textLength)
+        val typedPath = token.text.take(prefixLength).removePrefix("\"")
+        if (typedPath.startsWith('/')) return
         val parent = virtualFile.parent ?: return
-        val res = resolveRelativeDirectory(path, parent, virtualFile) ?: return
-        path = res.first
-        val parentDir = res.second
-        val isSameDir = res.third
+        val (path, parentDir) = resolveRelativeDirectory(typedPath, parent) ?: return
+        val isSameDir = parentDir == parent
         val lookupDirs = mutableListOf<LookupElement>()
         val lookupFiles = mutableListOf<LookupElement>()
         for (siblingFile in parentDir.children) {
@@ -178,46 +178,18 @@ class GlslIncludeStatementCompletion : GlslCompletionProvider() {
         // The default prefix matcher includes the string literal's opening quote (since that's
         // part of the same token up to the caret), which would filter out every lookup string
         // added here since none of them start with a quote.
-        val pathResultSet = resultSet.withPrefixMatcher(path)
+        val pathResultSet = resultSet.withPrefixMatcher(typedPath)
         pathResultSet.addAllElements(lookupDirs)
         pathResultSet.addAllElements(lookupFiles)
     }
 
-    private fun resolveRelativeDirectory(p: String, startDir: VirtualFile, virtualFile: VirtualFile): Triple<String, VirtualFile, Boolean>? {
-        var path = p;
-        var addPathStartingSlash = false
-        if (path.startsWith('/')) {
-            path = path.substring(1)
-            addPathStartingSlash = true
-        }
-        if (!path.contains('/') && path != ".")
-            path = ""
-        else {
-            val si = path.lastIndexOf('/')
-            path = path.substring(0, si)
-        }
-        val parentDir: VirtualFile
-        var addStartingSlash = false
-        var isSameDir = false
-        if (!path.isEmpty() && !path.endsWith("/")) {
-            addStartingSlash = true
-        }
-        if (path.isEmpty() || path == ".") {
-            parentDir = startDir
-        } else {
-            val relFile = startDir.findFileByRelativePath(path) ?: return null
-            parentDir = if (relFile.isDirectory) relFile else relFile.parent ?: return null
-        }
-        if (parentDir == virtualFile.parent) {
-            isSameDir = true
-        }
-        if (addStartingSlash) {
-            path = "$path/"
-        }
-        if (addPathStartingSlash) {
-            path = "/$path"
-        }
-        return Triple(path, parentDir, isSameDir)
+    private fun resolveRelativeDirectory(path: String, startDir: VirtualFile): Pair<String, VirtualFile>? {
+        val lastSlash = path.lastIndexOf('/')
+        if (lastSlash < 0) return "" to startDir
+
+        val directoryPrefix = path.substring(0, lastSlash + 1)
+        val directory = startDir.findFileByRelativePath(directoryPrefix.removeSuffix("/"))
+            ?.takeIf { it.isDirectory } ?: return null
+        return directoryPrefix to directory
     }
 }
-

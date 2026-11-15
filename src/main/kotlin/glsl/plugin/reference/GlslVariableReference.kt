@@ -30,7 +30,7 @@ import glsl.psi.interfaces.*
 class GlslVariableReference(private val element: GlslIdentifier, textRange: TextRange) :
     GlslReference(element, textRange) {
 
-    private var currentFile: VirtualFile? = null;
+    private var currentFile: VirtualFile? = null
 
     private val resolver = AbstractResolver<GlslReference, GlslNamedVariable> { reference, _ ->
         val project = reference.element.project
@@ -109,7 +109,7 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
             }
             lookupInGlobalScope(currentFile, externalDeclaration)
         } catch (_: PsiInvalidElementAccessException) {
-            includeFiles.clear()
+            includedFilesStack.clear()
         } catch (_: StopLookupException) {
             includedFilesStack.clear()
         }
@@ -131,11 +131,11 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
     /**
      *
      */
-    override fun lookupInExternalDeclaration(file: VirtualFile?, externalDeclaration: GlslExternalDeclaration?) {
+    override fun lookupInExternalDeclaration(relativeTo: VirtualFile?, externalDeclaration: GlslExternalDeclaration?) {
         if (externalDeclaration == null) return
         lookupInFunctionDeclarator(externalDeclaration.functionDefinition?.functionDeclarator, false)
         lookupInDeclaration(externalDeclaration.declaration)
-        lookupInPpStatement(file, externalDeclaration.ppStatement)
+        lookupInPpStatement(relativeTo, externalDeclaration.ppStatement)
     }
 
     /**
