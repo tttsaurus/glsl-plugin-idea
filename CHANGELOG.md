@@ -1,5 +1,23 @@
 # GLSL Plugin Changelog
 
+## [1.1.6-hotfix3]
+### Fixed
+- Fixed vec array & bool type inference
+
+### Features
+- Cherry-picked some commits from upstream: Fix GLSL parsing, completion, and reference resolution
+  - Reuse the file element type to prevent registry exhaustion
+  - Scope builtin caches to each project for reliable multi-project sessions
+  - Support recursive relative includes and cross-file struct member lookup
+  - Improve include, function, and #version completion in unfinished statements
+  - Fix indexed struct member types, parameterless calls, and reference state
+  - Support rename refactoring in injected GLSL
+  - Expand regression coverage and replace deprecated test APIs
+
+### Refactor
+- Repo cleanup
+- Updated dev env to Java25
+
 ## [1.1.6-hotfix2]
 ### Fixed
 - Prevent `GlslPsiBuilder` stack overflow
