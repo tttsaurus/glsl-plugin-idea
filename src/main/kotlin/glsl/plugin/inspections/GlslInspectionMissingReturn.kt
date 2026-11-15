@@ -10,15 +10,9 @@ import glsl.GlslTypes
 import glsl.psi.interfaces.GlslFunctionDefinition
 import glsl.psi.interfaces.GlslVisitor
 
-/**
- *
- */
 class GlslInspectionMissingReturn : GlslInspection() {
     override val errorMessageCode = GlslErrorCode.MISSING_RETURN_FUNCTION
 
-    /**
-     *
-     */
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         return object: GlslVisitor() {
             override fun visitFunctionDefinition(functionDefinition: GlslFunctionDefinition) {

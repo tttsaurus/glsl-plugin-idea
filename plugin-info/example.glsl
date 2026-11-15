@@ -13,9 +13,6 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-/**
-*
-*/
 int add(int a, int b) {
     f(1, 2)
     float v = normalize(a * PI);

@@ -7,15 +7,9 @@ import glsl.psi.interfaces.GlslDeclaration
 import glsl.psi.interfaces.GlslSingleDeclaration
 import glsl.psi.interfaces.GlslVisitor
 
-/**
- *
- */
 class GlslInspectionIncompatibleType : GlslInspection() {
     override val errorMessageCode = GlslErrorCode.INCOMPATIBLE_TYPES_IN_INIT
 
-    /**
-     *
-     */
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         return object : GlslVisitor() {
             override fun visitSingleDeclaration(singleDeclaration: GlslSingleDeclaration) {

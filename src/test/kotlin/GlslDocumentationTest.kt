@@ -5,7 +5,6 @@ import glsl.psi.interfaces.GlslFunctionCall
 import glsl.psi.interfaces.GlslSingleDeclaration
 import glsl.psi.interfaces.GlslUnaryExpr
 
-
 class GlslDocumentationTest : BasePlatformTestCase() {
 
     override fun getTestDataPath(): String {

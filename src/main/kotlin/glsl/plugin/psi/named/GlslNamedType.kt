@@ -10,10 +10,6 @@ import glsl.plugin.editor.highlighting.GlslTextAttributes
 import glsl.plugin.inspections.GlslError
 import javax.swing.Icon
 
-
-/**
- *
- */
 interface GlslNamedType : GlslNamedElement {
     var glslError: GlslError?
     var isPrimitive: Boolean
@@ -26,9 +22,6 @@ interface GlslNamedType : GlslNamedElement {
     fun getBinaryType(other: GlslNamedElement?, operation: String): GlslNamedType?
     fun getScalarType(): GlslNamedType?
 
-    /**
-     *
-     */
     fun isEqual(other: GlslNamedType?): Boolean {
         val thisElementType = typeAsToken() ?: return false
         val otherElementType = other?.typeAsToken() ?: return false
@@ -36,43 +29,25 @@ interface GlslNamedType : GlslNamedElement {
     }
 }
 
-/**
- *
- */
 abstract class GlslNamedTypeImpl(node: ASTNode) : GlslNamedElementImpl(node), GlslNamedType {
     override var glslError: GlslError? = null
 
-    /**
-     *
-     */
     override fun typeAsToken(): IElementType? {
         return firstChild.elementType
     }
 
-    /**
-     *
-     */
     override fun getScalarType(): GlslNamedType? {
         return null
     }
 
-    /**
-     *
-     */
     override fun getHighlightTextAttr(): TextAttributesKey {
         return GlslTextAttributes.BUILTIN_TYPE_TEXT_ATTR
     }
 
-    /**
-     *
-     */
     override fun getLookupIcon(): Icon? {
         return AllIcons.Nodes.Type
     }
 
-    /**
-     *
-     */
     override fun getNameIdentifier(): PsiElement? {
         return firstChild
     }

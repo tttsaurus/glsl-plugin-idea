@@ -4,9 +4,7 @@ import com.intellij.lang.PsiBuilder
 import com.intellij.lang.parser.GeneratedParserUtilBase
 import glsl.GlslTypes.*
 
-
 object GlslPsiUtils : GeneratedParserUtilBase() {
-
 
     /**
      *  This method differentiates between a type and a variable. If we have 2 identifiers
@@ -28,9 +26,6 @@ object GlslPsiUtils : GeneratedParserUtilBase() {
         return false
     }
 
-    /**
-     *
-     */
     @JvmStatic
     fun macroIdentifierObject(builder: PsiBuilder, level: Int): Boolean {
         if (!recursion_guard_(builder, level, "macro_identifier_object")) return false
@@ -40,9 +35,6 @@ object GlslPsiUtils : GeneratedParserUtilBase() {
         return result
     }
 
-    /**
-     *
-     */
     @JvmStatic
     fun macroIdentifierFunction(builder: PsiBuilder, level: Int): Boolean {
         if (!recursion_guard_(builder, level, "macro_identifier_function")) return false
@@ -52,9 +44,6 @@ object GlslPsiUtils : GeneratedParserUtilBase() {
         return result
     }
 
-    /**
-     *
-     */
     @JvmStatic
     fun macroBodyToken(builder: PsiBuilder, level: Int): Boolean {
         if (!recursion_guard_(builder, level, "macro_body_token")) return false
@@ -64,9 +53,6 @@ object GlslPsiUtils : GeneratedParserUtilBase() {
         return true
     }
 
-    /**
-     *
-     */
     @JvmStatic
     fun ppText(builder: PsiBuilder, level: Int): Boolean {
         if (!recursion_guard_(builder, level, "pp_text")) return false

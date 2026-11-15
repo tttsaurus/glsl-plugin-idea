@@ -1,7 +1,6 @@
 import com.intellij.testFramework.ParsingTestCase
 import glsl.plugin.language.GlslParserDefinition
 
-
 class GlslParserTest : ParsingTestCase("", "test", GlslParserDefinition()) {
 
     override fun getTestDataPath(): String {

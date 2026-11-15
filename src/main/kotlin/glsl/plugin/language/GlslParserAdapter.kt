@@ -7,14 +7,8 @@ import com.intellij.psi.tree.IElementType
 import glsl._GlslParser
 import glsl.plugin.psi.GlslPsiBuilder
 
-/**
- *
- */
 class GlslParserAdapter : _GlslParser() {
     
-    /**
-     *
-     */
     override fun parseLight(root: IElementType, originalBuilder: PsiBuilder) {
         val state = GeneratedParserUtilBase.ErrorState()
         GeneratedParserUtilBase.ErrorState.initState(state, originalBuilder, root, EXTENDS_SETS_)

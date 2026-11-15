@@ -14,9 +14,6 @@ import glsl.data.GlslTokenSets.IGNORE_MACRO_BODY_TOKEN
 import glsl.data.GlslTokenSets.ALL_OPERATORS
 import glsl.plugin.utils.GlslUtils.getVirtualFile
 
-/**
- *
- */
 class GlslMacro(val name: String, val macroDefineType: IElementType) {
     val elements = arrayListOf<Pair<String?, IElementType?>>()
     var params = mutableListOf<String>()
@@ -32,9 +29,6 @@ private enum class MacroExpansionMode {
     REAL_EXPANSION
 }
 
-/**
- *
- */
 class GlslLexer(private val project: Project? = null, private val baseFile: VirtualFile? = null) : LexerBase() {
     private val lexer = _GlslLexer()
     private val helperLexerPool = ArrayList<_GlslLexer>()
@@ -103,9 +97,6 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
         }
     }
 
-    /**
-     *
-     */
     override fun start(buffer: CharSequence, startOffset: Int, endOffset: Int, initialState: Int) {
         lexer.reset(buffer, startOffset, endOffset, initialState)
         myText = buffer.toString()
@@ -114,9 +105,6 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
         advance()
     }
 
-    /**
-     *
-     */
     override fun advance() {
         if (macroExpansion == null) {
             advanceLexer()
@@ -146,69 +134,42 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
         }
     }
 
-    /**
-     *
-     */
     override fun getTokenType(): IElementType? {
         //TODO this can trigger in huge shader files even when there's no recursion
         if (inEndlessRecursion()) return null
         return myTokenType
     }
 
-    /**
-     *
-     */
     override fun getTokenStart(): Int {
         return myTokenStart
     }
 
-    /**
-     *
-     */
     override fun getTokenEnd(): Int {
         return lexer.tokenEnd
     }
 
-    /**
-     *
-     */
     override fun getTokenText(): String {
         return lexer.yytext().toString()
     }
 
-    /**
-     *
-     */
     override fun getState(): Int {
         return lexer.yystate()
     }
 
-    /**
-     *
-     */
     override fun getBufferSequence(): CharSequence {
         return myText
     }
 
-    /**
-     *
-     */
     override fun getBufferEnd(): Int {
         return myBufferEnd
     }
 
-    /**
-     *
-     */
     private fun advanceLexer() {
         myTokenType = lexer.advance()
         myTokenText = lexer.yytext().toString()
         myTokenStart = lexer.tokenStart
     }
 
-    /**
-     *
-     */
     private fun addIncludeUserTypes() {
         addIncludeRecursiveStep(lexer, baseFile, myTokenText, HashSet<VirtualFile>(), 0)
     }
@@ -237,9 +198,6 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
         freeHelperLexer(helperLexer)
     }
 
-    /**
-     *
-     */
     private fun initializeMacroCall() {
         val macro = macros[tokenText] ?: return
         if (macro.macroDefineType == MACRO_FUNCTION) {
@@ -254,9 +212,6 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
         }
     }
 
-    /**
-     *
-     */
     private fun expandMacro() {
         if (state != MACRO_BODY_STATE && myTokenType in listOf(MACRO_OBJECT_CALL, RIGHT_PAREN_MACRO_CALL)) {
             myTokenStart += myTokenText.length
@@ -278,9 +233,6 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
         }
     }
 
-    /**
-     *
-     */
     private fun expandMacroParam() {
         if (paramExpansionIter?.hasNext() == true) {
             myTokenType = paramExpansionIter?.next()
@@ -289,9 +241,6 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
         }
     }
 
-    /**
-     *
-     */
     private fun addMacroBodyToken() {
         if (macroDefine == null) return
         if (myTokenType == PP_END) {
@@ -364,9 +313,6 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
         return true
     }
 
-    /**
-     *
-     */
     private fun clearAllData() {
         macros.clear()
         macroDefine = null
@@ -380,9 +326,6 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
         advanceLexer()
     }
 
-    /**
-     *
-     */
     private fun getMacroType(): IElementType? {
         val helperLexer = getHelperLexer()
         helperLexer.reset(myText, tokenEnd, bufferEnd, YYINITIAL)

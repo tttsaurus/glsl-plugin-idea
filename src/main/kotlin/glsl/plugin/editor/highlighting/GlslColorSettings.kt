@@ -44,56 +44,31 @@ private val ADDITIONAL_DESCRIPTORS = mutableMapOf(
     "mph" to GlslTextAttributes.MACRO_PLACEHOLDER_ATTR,
 )
 
-
-/**
- *
- */
 class GlslColorSettings : ColorSettingsPage {
 
-    /**
-    *
-    */
     override fun getAttributeDescriptors(): Array<AttributesDescriptor> {
         return DESCRIPTORS
     }
 
-    /**
-    *
-    */
     override fun getColorDescriptors(): Array<ColorDescriptor> {
         return ColorDescriptor.EMPTY_ARRAY
     }
 
-    /**
-    *
-    */
     override fun getDisplayName(): String {
         return "GLSL"
     }
 
-    /**
-    *
-    */
     override fun getIcon(): Icon {
         return GlslIcon.PLUGIN_FILE_ICON
     }
 
-    /**
-    *
-    */
     override fun getHighlighter(): SyntaxHighlighter {
         return GlslSyntaxHighlighter()
     }
 
-    /**
-    *
-    */
     override fun getDemoText(): String {
         return GlslUtils.getResourceFileAsString("colors/color-demo-text.txt") ?: ""
     }
-    /**
-    *
-    */
     override fun getAdditionalHighlightingTagToDescriptorMap(): MutableMap<String, TextAttributesKey> {
         return ADDITIONAL_DESCRIPTORS
     }

@@ -9,31 +9,19 @@ import glsl.GlslTypes.*
 import glsl._GlslParser
 import glsl.data.GlslTokenSets.IDENTIFIERS
 
-/**
- *
- */
 class GlslPsiBuilder(builder: PsiBuilder, state: GeneratedParserUtilBase.ErrorState, parser: _GlslParser) : GeneratedParserUtilBase.Builder(builder, state, parser) {
     private var isExpandingMacroCall = false
 
-    /**
-     *
-     */
     override fun getTokenType(): IElementType? {
         macroCall()
         return super.getTokenType()
     }
 
-    /**
-     *
-     */
     override fun getTokenText(): String? {
         macroCall()
         return super.getTokenText()
     }
 
-    /**
-     *
-     */
     private fun macroCall() {
         if (isExpandingMacroCall) return
 

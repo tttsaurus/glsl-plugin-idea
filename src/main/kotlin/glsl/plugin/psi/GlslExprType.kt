@@ -50,9 +50,6 @@ abstract class GlslExprTypeImpl(node: ASTNode) : ASTWrapperPsiElement(node), Gls
         }
     }
 
-    /**
-     *
-     */
     private fun getPostfixType(postfixExpr: GlslPostfixExpr?): ExpressionType? {
         return when (postfixExpr) {
             is GlslPrimaryExpr -> getPrimaryExprType(postfixExpr)
@@ -67,9 +64,6 @@ abstract class GlslExprTypeImpl(node: ASTNode) : ASTWrapperPsiElement(node), Gls
         }
     }
 
-    /**
-     *
-     */
     private fun getArrayIndexType(arrayIndex: GlslPostfixArrayIndex): ExpressionType? {
         var result = getPostfixType(arrayIndex.postfixExpr) ?: return null
         repeat(arrayIndex.exprList.size) {
@@ -121,9 +115,6 @@ abstract class GlslExprTypeImpl(node: ASTNode) : ASTWrapperPsiElement(node), Gls
         return ExpressionType(type, getArrayDimensions(typeSpecifier?.arraySpecifier) + getArrayDimensions(arraySpecifier))
     }
 
-    /**
-     *
-     */
     private fun getPrimaryExprType(primaryExpr: GlslPrimaryExpr): ExpressionType? {
         if (primaryExpr.variableIdentifier != null) {
             return getDeclaredType(primaryExpr.variableIdentifier?.resolveReference())
@@ -146,10 +137,6 @@ abstract class GlslExprTypeImpl(node: ASTNode) : ASTWrapperPsiElement(node), Gls
         }
     }
 
-
-    /**
-     *
-     */
     private fun getBinaryExprType(expr: PsiElement): GlslNamedType? {
         val exprList = PsiTreeUtil.getChildrenOfTypeAsList(expr, GlslExpr::class.java)
         val leftExpr = exprList.first().getExprType() ?: return null
@@ -158,9 +145,6 @@ abstract class GlslExprTypeImpl(node: ASTNode) : ASTWrapperPsiElement(node), Gls
         return leftExpr.getBinaryType(rightExpr, operation)
     }
 
-    /**
-     *
-     */
     private fun getPostfixSelectionType(postfixExpr: GlslPostfixFieldSelection): ExpressionType? {
         val member = postfixExpr.postfixStructMemberList.lastOrNull() ?: return null
         val identifier = member.variableIdentifier ?: member.functionCall?.variableIdentifier

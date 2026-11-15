@@ -10,34 +10,19 @@ import glsl.plugin.language.GlslFile
 import glsl.plugin.language.GlslFileType
 import glsl.plugin.reference.GlslTypeReference
 
-/**
- *
- */
 abstract class GlslType(node: ASTNode) : ASTWrapperPsiElement(node), GlslIdentifier {
-    /**
-     *
-     */
     override fun getReferences(): Array<out PsiReference?> {
         return PsiReferenceService.getService().getContributedReferences(this)
     }
 
-    /**
-     *
-     */
     override fun getReference(): GlslTypeReference? {
         return references.firstOrNull() as? GlslTypeReference
     }
 
-    /**
-     *
-     */
     override fun getName(): String {
         return node.text.replace("IntellijIdeaRulezzz", "")
     }
 
-    /**
-     *
-     */
     override fun replaceElementName(newName: String?): GlslIdentifier? {
         if (newName == null) return this
         val dummyDeclaration = "$newName;"
@@ -48,9 +33,6 @@ abstract class GlslType(node: ASTNode) : ASTWrapperPsiElement(node), GlslIdentif
         return replace(newIdentifierNode) as? GlslIdentifier
     }
 
-    /**
-     *
-     */
     fun isEmpty(): Boolean {
         return node.text == "IntellijIdeaRulezzz"
     }

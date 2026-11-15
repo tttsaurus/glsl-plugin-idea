@@ -64,9 +64,6 @@ object GlslBuiltinUtils {
         }, false)
     }
 
-    /**
-     *
-     */
     fun getVecStructs(project: Project): Map<String, Map<String, GlslNamedVariable>> {
         return CachedValuesManager.getManager(project).getCachedValue(project, VEC_STRUCTS_KEY, {
             val builtinFile = getBuiltinFile(project, "glsl-vector-structs")
@@ -89,9 +86,6 @@ object GlslBuiltinUtils {
         }, false)
     }
 
-    /**
-     *
-     */
     fun getBuiltinConstants(project: Project): Map<String, GlslNamedVariable> {
         return CachedValuesManager.getManager(project).getCachedValue(project, BUILTIN_CONSTANTS_KEY, {
             val builtinFile = getBuiltinFile(project, "glsl-builtin-constants")
@@ -116,9 +110,6 @@ object GlslBuiltinUtils {
         return shaderVariables.perType[shaderType] ?: emptyMap()
     }
 
-    /**
-     *
-     */
     private fun getShaderVariablesData(project: Project): ShaderVariables {
         return CachedValuesManager.getManager(project).getCachedValue(project, SHADER_VARIABLES_KEY, {
             val shaderVariablesFile = getBuiltinFile(project, "glsl-shader-variables")
@@ -141,32 +132,20 @@ object GlslBuiltinUtils {
         }, false)
     }
 
-    /**
-     *
-     */
     fun isBuiltin(project: Project, name: String?, fileExtension: String? = null): Boolean {
         if (name == null) return false
         return isBuiltinFunction(project, name) || isBuiltinShaderVariable(project, name, fileExtension) || isBuiltinConstant(project, name)
     }
 
-    /**
-     *
-     */
     fun isBuiltinFunction(project: Project, name: String?): Boolean {
         if (name == null) return false
         return name in getBuiltinFuncs(project).keys
     }
 
-    /**
-     *
-     */
     fun isBuiltinConstant(project: Project, name: String): Boolean {
         return name in getBuiltinConstants(project).keys
     }
 
-    /**
-     *
-     */
     fun isBuiltinShaderVariable(project: Project, variable: String, fileExtension: String?): Boolean {
         if (fileExtension == null) return false
         val shaderVariables = getShaderVariablesData(project)
@@ -182,9 +161,6 @@ object GlslBuiltinUtils {
         }
     }
 
-    /**
-     *
-     */
     private fun getBuiltinFile(project: Project, fileName: String): GlslFile? {
         val funcsString = getResourceFileAsString("builtin-objects/$fileName.glsl") ?: return null
         val fileFactory = PsiFileFactory.getInstance(project)
@@ -193,9 +169,6 @@ object GlslBuiltinUtils {
         return glslFile
     }
 
-    /**
-     *
-     */
     private fun getShaderType(fileExtension: String?): ShaderType {
         if (fileExtension == null) return GLSL
         return try {

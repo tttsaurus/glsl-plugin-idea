@@ -4,9 +4,6 @@ import com.intellij.psi.TokenType.WHITE_SPACE
 import com.intellij.psi.tree.TokenSet
 import glsl.GlslTypes.*
 
-/**
- *
- */
 object GlslTokenSets {
     val IDENTIFIERS = TokenSet.create(IDENTIFIER, MACRO_OBJECT, MACRO_OBJECT_CALL, MACRO_FUNCTION_CALL, MACRO_FUNCTION)
 

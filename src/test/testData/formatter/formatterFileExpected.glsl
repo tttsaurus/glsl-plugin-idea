@@ -21,7 +21,6 @@ void main() {
     DEF3
 }
 
-
 #define FUN(a, b) a + b;
 #define DEF4 int a = 2;
 #define PI 3.14
@@ -100,7 +99,6 @@ int a = a[1];
 int a = a[1][2];
 int a = a[1][2][3];
 
-
 float _a = { 1.0, 2.0, 3.0, 4.0 };
 float _a = { 1.0 + 2, 2.0 * 2, 3.0 / 2, 4.0 - 2.0 };
 
@@ -133,10 +131,8 @@ layout (location) uniform UniformType {
     mat4 b;
 } uni;
 
-
 void main(UserType a, UserType b) {}
 UserType main() {}
-
 
 noperspective centroid out vec2 a;
 centroid out vec2 a;

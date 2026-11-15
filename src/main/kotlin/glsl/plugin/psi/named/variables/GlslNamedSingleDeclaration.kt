@@ -11,43 +11,25 @@ import glsl.psi.interfaces.GlslSingleDeclaration
 import glsl.psi.interfaces.GlslVariableIdentifier
 import javax.swing.Icon
 
-/**
- *
- */
 abstract class GlslNamedSingleDeclaration(node: ASTNode) : GlslNamedVariableImpl(node) {
 
-    /**
-     *
-     */
     override fun getPsi(): GlslSingleDeclaration {
         return this as GlslSingleDeclaration
     }
 
-    /**
-     *
-     */
     override fun getNameIdentifier(): GlslVariableIdentifier? {
         return getPsi().variableIdentifier
     }
 
-    /**
-     *
-     */
     override fun getLookupIcon(): Icon {
         return AllIcons.Nodes.Variable
     }
 
-    /**
-     *
-     */
     override fun getAssociatedType(): GlslNamedType? {
         val typeSpecifier = getPsi().typeSpecifier
         return GlslUtils.getType(typeSpecifier)
     }
 
-    /**
-     *
-     */
     override fun getHighlightTextAttr(): TextAttributesKey {
         return GlslTextAttributes.VARIABLE_TEXT_ATTR
     }

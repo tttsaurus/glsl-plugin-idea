@@ -24,16 +24,10 @@ class GlslBlock(
     private val myIndent: Indent?
 ) : AbstractBlock(node, wrap, myAlignment) {
 
-    /**
-     *
-     */
     override fun getIndent(): Indent? {
         return myIndent
     }
 
-    /**
-     *
-     */
     override fun getSpacing(child1: Block?, child2: Block): Spacing? {
         val glslBlock = (child1 as? GlslBlock)?.node
         if (glslBlock?.textLength == 0) return null
@@ -43,9 +37,6 @@ class GlslBlock(
         return mySpacing.getSpacing(this, child1, child2)
     }
 
-    /**
-     *
-     */
     override fun isLeaf(): Boolean {
         return node.firstChildNode == null
     }
@@ -60,9 +51,6 @@ class GlslBlock(
         return super.getChildAttributes(newChildIndex)
     }
 
-    /**
-     *
-     */
     override fun buildChildren(): List<Block> {
         val blocks = arrayListOf<Block>()
         val newAlignment = Alignment.createAlignment()
@@ -77,9 +65,6 @@ class GlslBlock(
         return blocks
     }
 
-    /**
-     *
-     */
     private fun getChildBlock(child: ASTNode, newAlignment: Alignment, switchStatementAlignment: Alignment): Block {
         val currentElementType = node.elementType
         val childElementType = child.elementType
@@ -107,9 +92,6 @@ class GlslBlock(
         }
     }
 
-    /**
-     *
-     */
     private fun getCommentBlock(child: ASTNode, newAlignment: Alignment): GlslBlock {
         val parentType = node.elementType
         return when (parentType) {
@@ -142,9 +124,6 @@ class GlslBlock(
         }
     }
 
-    /**
-     *
-     */
     private fun getDoWhileStatementBlock(doWhileElement: ASTNode, newAlignment: Alignment): GlslBlock {
         if (doWhileElement.elementType == STATEMENT) {
             if (doWhileElement.firstChildNode.elementType == COMPOUND_STATEMENT) {

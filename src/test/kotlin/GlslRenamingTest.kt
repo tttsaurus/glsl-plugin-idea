@@ -91,7 +91,6 @@ class GlslRenamingTest : BasePlatformTestCase() {
         myFixture.checkResultByFile("RenamingIdentifierFile8Expected.html")
     }
 
-
     private fun renameInPlace(newName: String) {
         val editorContext = DataManager.getInstance().getDataContext(myFixture.editor.contentComponent)
 

@@ -13,7 +13,6 @@ uniform mat4 <v>model</v>;
 uniform mat4 <v>view</v>;
 uniform mat4 <v>projection</v>;
 
-
 /**
 * Multi line comment
 * Multi line comment
@@ -26,7 +25,6 @@ struct <udt>VertexInput</udt> {
     vec4 <v>color</v>;
     vec2 <v>quad_pos</v>;
 } <v>vertexInput</v>;
-
 
 void <fn>main</fn>() {
     for (int <v>i</v> = 0; 1 >= 0; <v>i</v>++) {

@@ -9,10 +9,6 @@ import java.io.File
 import java.nio.file.Files
 import kotlin.io.path.Path
 
-
-/**
- *
- */
 @Suppress("unused")
 private fun sortFunctionsByTypePriority() {
     val priorities = mapOf(
@@ -88,10 +84,6 @@ private fun sortFunctionsByTypePriority() {
 @Suppress("unused")
 class DocsParts(val header: String, val parameters: Map<String, String>, val description: String?)
 
-
-/**
- *
- */
 @Suppress("unused")
 private fun convertFuncTextToHtml(funcName: String, docsParts: DocsParts): String {
     val sb = StringBuilder()
@@ -171,7 +163,6 @@ val funcs = listOf(
 
 )
 
-
 @Suppress("unused")
 val imageParams = listOf("gimage3D image, ivec3 P",
     "gimageCube image, ivec3 P",
@@ -188,6 +179,4 @@ val imageParams = listOf("gimage3D image, ivec3 P",
 fun main() {
 
 }
-
-
 

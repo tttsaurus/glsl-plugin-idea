@@ -10,18 +10,9 @@ import com.intellij.psi.tree.TokenSet
 import glsl.GlslTypes
 import glsl.plugin.language.GlslLanguage
 
-/**
- *
- */
 class GlslBraceMatcher : PairedBraceMatcherAdapter(GlslBraceMatcherBase(), GlslLanguage.INSTANCE)
 
-/**
- *
- */
 private class GlslBraceMatcherBase : PairedBraceMatcher {
-    /**
-    *
-    */
     override fun getPairs(): Array<BracePair> {
         return arrayOf(
             BracePair(GlslTypes.LEFT_BRACE, GlslTypes.RIGHT_BRACE, true),
@@ -30,9 +21,6 @@ private class GlslBraceMatcherBase : PairedBraceMatcher {
         )
     }
 
-    /**
-    *
-    */
     override fun isPairedBracesAllowedBeforeType(lbraceType: IElementType, contextType: IElementType?): Boolean {
         return contextType in TokenSet.orSet(
             TokenSet.create(GlslTypes.LINE_COMMENT),
@@ -48,9 +36,6 @@ private class GlslBraceMatcherBase : PairedBraceMatcher {
         )
     }
 
-    /**
-    *
-    */
     override fun getCodeConstructStart(file: PsiFile?, openingBraceOffset: Int): Int {
         return openingBraceOffset
     }

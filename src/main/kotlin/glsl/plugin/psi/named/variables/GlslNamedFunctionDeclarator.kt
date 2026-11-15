@@ -13,57 +13,33 @@ import glsl.psi.interfaces.GlslFunctionDeclarator
 import glsl.psi.interfaces.GlslVariableIdentifier
 import javax.swing.Icon
 
-/**
- *
- */
 abstract class GlslNamedFunctionDeclarator(node: ASTNode) : GlslNamedVariableImpl(node) {
 
-    /**
-     *
-     */
     override fun getPsi(): GlslFunctionDeclarator {
         return this as GlslFunctionDeclarator
     }
 
-    /**
-     *
-     */
     override fun getLookupIcon(): Icon {
         return AllIcons.Nodes.Function
     }
 
-    /**
-     *
-     */
     override fun getNameIdentifier(): GlslVariableIdentifier? {
         return getPsi().variableIdentifier
     }
 
-    /**
-     *
-     */
     override fun getAssociatedType(): GlslNamedType? {
         return GlslUtils.getType(getPsi().typeSpecifier)
     }
 
-    /**
-     *
-     */
     override fun getHighlightTextAttr(): TextAttributesKey {
         return GlslTextAttributes.FUNC_TEXT_ATTR
     }
 
-    /**
-     *
-     */
     override fun getLookupElement(returnTypeText: String?): LookupElement? {
         val functionPrototype = getPsi().parentOfType<GlslFunctionDeclarator>(true) ?: return null
         return GlslUtils.getFunctionLookupElement(functionPrototype, getLookupIcon())
     }
 
-    /**
-     *
-     */
     fun getParameterTypes(): List<GlslNamedType>? {
         return getPsi().funcHeaderWithParams
             ?.parameterDeclaratorList

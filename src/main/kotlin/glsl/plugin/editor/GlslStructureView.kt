@@ -18,7 +18,6 @@ import glsl.psi.impl.GlslFunctionDefinitionImpl
 import glsl.psi.interfaces.GlslExternalDeclaration
 import glsl.psi.interfaces.GlslFunctionDefinition
 
-
 class GlslStructureViewFactory : PsiStructureViewFactory {
     override fun getStructureViewBuilder(psiFile: PsiFile): StructureViewBuilder {
         return object : TreeBasedStructureViewBuilder() {
@@ -48,7 +47,6 @@ class GlslStructureViewModel(editor: Editor?, psiFile: PsiFile) :
         return element?.value is GlslExternalDeclaration
     }
 }
-
 
 class GlslStructureViewElement(private val element: NavigatablePsiElement) : StructureViewTreeElement, SortableTreeElement {
 

@@ -25,10 +25,6 @@ import glsl.plugin.utils.GlslUtils.getRealVirtualFile
 import glsl.plugin.utils.GlslUtils.getVectorInsertHandler
 import javax.swing.Icon
 
-
-/**
- *
- */
 abstract class GlslCompletionProvider : CompletionProvider<CompletionParameters>()
 
 enum class GlslPostWhiteSpaceCompletion {
@@ -36,14 +32,8 @@ enum class GlslPostWhiteSpaceCompletion {
     Require,
     Reject
 }
-/**
- *
- */
 class GlslGenericCompletion(private vararg var keywords: String, private val icon: Icon? = null, private val whitespace: GlslPostWhiteSpaceCompletion = GlslPostWhiteSpaceCompletion.Ignore) : GlslCompletionProvider() {
 
-    /**
-     *
-     */
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, resultSet: CompletionResultSet) {
         val prevLeaf = parameters.position.prevLeaf(true)
         val theResultSet = if (prevLeaf != null) {
@@ -64,9 +54,6 @@ class GlslGenericCompletion(private vararg var keywords: String, private val ico
     }
 }
 
-/**
- *
- */
 class GlslPpCompletion : GlslCompletionProvider() {
 
     private val preprocessors = GlslUtils.getTokenSetAsStrings(GlslTokenSets.PREPROCESSORS)
@@ -77,9 +64,6 @@ class GlslPpCompletion : GlslCompletionProvider() {
         context.document.replaceString(context.startOffset, context.selectionEndOffset, "${lookupElement.lookupString} ")
     }
 
-    /**
-     *
-     */
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, resultSet: CompletionResultSet) {
         resultSet.addAllElements(preprocessors.map {
             createLookupElement(it.drop(1), insertHandler, psiElement = parameters.position)
@@ -87,15 +71,8 @@ class GlslPpCompletion : GlslCompletionProvider() {
     }
 }
 
-
-/**
- *
- */
 class GlslBuiltinFuncCompletion : GlslCompletionProvider() {
 
-    /**
-     *
-     */
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, resultSet: CompletionResultSet) {
         val builtinFuncMap = GlslBuiltinUtils.getBuiltinFuncs(parameters.position.project)
         for ((funcName, funcOverloads) in builtinFuncMap) {
@@ -110,24 +87,15 @@ class GlslBuiltinFuncCompletion : GlslCompletionProvider() {
     }
 }
 
-/**
- *
- */
 class GlslBuiltinTypesCompletion : GlslCompletionProvider() {
     private val tokens = GlslTokenSets.BUILTIN_TYPES.map { it.toString() }
 
-    /**
-     *
-     */
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, resultSet: CompletionResultSet) {
         val builtinTypes = createLookupElements(tokens.toList())
         resultSet.addAllElements(builtinTypes)
     }
 }
 
-/**
- *
- */
 class GlslIncludeStatementCompletion : GlslCompletionProvider() {
     private val insertHandler = InsertHandler<LookupElement> { context, lookupElement ->
         val s = lookupElement.lookupString
@@ -141,9 +109,6 @@ class GlslIncludeStatementCompletion : GlslCompletionProvider() {
         }
     }
 
-    /**
-     *
-     */
     override fun addCompletions(parameters: CompletionParameters, context: ProcessingContext, resultSet: CompletionResultSet) {
         val virtualFile = parameters.originalFile.getRealVirtualFile() ?: return
         val token = parameters.position

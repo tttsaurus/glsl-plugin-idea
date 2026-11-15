@@ -11,30 +11,18 @@ import glsl.plugin.language.GlslLanguage
 import glsl.plugin.utils.GlslUtils
 
 class GlslCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
-    /**
-    *
-    */
     override fun getLanguage(): Language {
         return GlslLanguage.INSTANCE
     }
 
-    /**
-    *
-    */
     override fun getCodeSample(settingsType: SettingsType): String? {
         return GlslUtils.getResourceFileAsString("formatter/sample-code.txt")
     }
 
-    /**
-    *
-    */
     override fun getIndentOptionsEditor(): IndentOptionsEditor {
         return SmartIndentOptionsEditor()
     }
 
-    /**
-    *
-    */
     override fun customizeSettings(consumer: CodeStyleSettingsCustomizable, settingsType: SettingsType) {
         consumer.showStandardOptions(
             "SPACE_BEFORE_SEMICOLON",
@@ -62,7 +50,4 @@ class GlslCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
     }
 }
 
-/**
- *
- */
 class GlslCodeStyleSettings(settings: CodeStyleSettings) : CustomCodeStyleSettings("GlslCodeStyleSetting", settings)

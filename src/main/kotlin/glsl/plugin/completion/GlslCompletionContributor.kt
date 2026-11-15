@@ -13,10 +13,6 @@ import glsl.plugin.completion.GlslPostWhiteSpaceCompletion.Require
 import glsl.plugin.utils.GlslUtils
 import glsl.psi.interfaces.*
 
-
-/**
- *
- */
 class GlslCompletionContributor : CompletionContributor() {
     // Keywords sets
     private val selectionKeywords = GlslUtils.getTokenSetAsStrings(GlslTokenSets.SELECTION)

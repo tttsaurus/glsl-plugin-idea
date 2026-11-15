@@ -8,10 +8,6 @@ import glsl.GlslTypes
 import glsl.plugin.psi.GlslType
 import glsl.plugin.psi.GlslVariable
 
-
-/**
- *
- */
 class GlslReferenceContributor : PsiReferenceContributor() {
     private val numericPattern = StandardPatterns.or(
         psiElement(GlslTypes.INTCONSTANT),
@@ -24,17 +20,11 @@ class GlslReferenceContributor : PsiReferenceContributor() {
     private val typePattern = psiElement(GlslType::class.java)
         .andNot(psiElement().afterLeaf(numericPattern))
 
-    /**
-    *
-    */
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
         registrar.registerReferenceProvider(variablePattern, GlslVariableReferenceProvider())
         registrar.registerReferenceProvider(typePattern, GlslTypeReferenceProvider())
     }
 
-    /**
-     *
-     */
     inner class GlslVariableReferenceProvider : PsiReferenceProvider() {
         override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
             if (element !is GlslVariable) return emptyArray()
@@ -42,9 +32,6 @@ class GlslReferenceContributor : PsiReferenceContributor() {
         }
     }
 
-    /**
-     *
-     */
     inner class GlslTypeReferenceProvider : PsiReferenceProvider() {
         override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
             if (element !is GlslType) return emptyArray()
@@ -52,5 +39,4 @@ class GlslReferenceContributor : PsiReferenceContributor() {
         }
     }
 }
-
 

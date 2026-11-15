@@ -31,28 +31,16 @@ import glsl.plugin.editor.highlighting.GlslTextAttributes.OPERATORS_TEXT_ATTR
 import glsl.plugin.editor.highlighting.GlslTextAttributes.PREPROCESSOR_TEXT_ATTR
 import glsl.plugin.editor.highlighting.GlslTextAttributes.STRING_TEXT_ATTR
 
-/**
- *
- */
 class GlslSyntaxHighlighter : SyntaxHighlighterBase() {
 
-    /**
-     *
-     */
     override fun getHighlightingLexer(): Lexer {
         return FlexAdapter(_GlslHighlightLexer(null))
     }
 
-    /**
-     *
-     */
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> {
         return pack(mapTokenToTextAttr(tokenType))
     }
 
-    /**
-     *
-     */
     private fun mapTokenToTextAttr(tokenType: IElementType): TextAttributesKey? {
         return when (tokenType) {
             GlslTypes.LINE_COMMENT -> LINE_COMMENT_TEXT_ATTR
@@ -74,9 +62,6 @@ class GlslSyntaxHighlighter : SyntaxHighlighterBase() {
     }
 }
 
-/**
- *
- */
 object GlslTextAttributes {
     val VARIABLE_TEXT_ATTR = createTextAttributesKey("GLSL_VARIABLE", IDENTIFIER)
     val USER_DEFINED_TYPE_TEXT_ATTR = createTextAttributesKey("GLSL_USER_DEFINED_TYPE", CLASS_REFERENCE)
@@ -100,13 +85,7 @@ object GlslTextAttributes {
     val BAD_CHARACTER_TEXT_ATTR = createTextAttributesKey("GLSL_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER)
 }
 
-/**
- *
- */
 class GlslSyntaxHighlightingFactory : SyntaxHighlighterFactory() {
-    /**
-     *
-     */
     override fun getSyntaxHighlighter(project: Project?, virtualFile: VirtualFile?): SyntaxHighlighter {
         return GlslSyntaxHighlighter()
     }

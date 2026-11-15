@@ -9,9 +9,6 @@ import glsl.plugin.utils.GlslUtils
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
-/**
- *
- */
 class GlslDocumentationProvider : DocumentationProvider {
     private var document: Document? = null
 
@@ -22,9 +19,6 @@ class GlslDocumentationProvider : DocumentationProvider {
         }
     }
 
-    /**
-     *
-     */
     override fun getCustomDocumentationElement(
         editor: Editor,
         file: PsiFile,
@@ -37,9 +31,6 @@ class GlslDocumentationProvider : DocumentationProvider {
         return null
     }
 
-    /**
-     *
-     */
     override fun generateDoc(element: PsiElement?, originalElement: PsiElement?): String? {
         val project = element?.project ?: originalElement?.project ?: return null
         val elementText = element?.text

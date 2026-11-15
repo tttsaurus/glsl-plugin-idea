@@ -8,37 +8,21 @@ import glsl.plugin.psi.named.GlslNamedType
 import glsl.plugin.psi.named.GlslNamedVariable
 import glsl.psi.interfaces.GlslBuiltinTypeScalar
 
-/**
- *
- */
 abstract class GlslScalar(node: ASTNode) : GlslBuiltinType(node) {
     override var isPrimitive = true
 
-    /**
-     *
-     */
     override fun getPsi(): GlslBuiltinTypeScalar {
         return this as GlslBuiltinTypeScalar
     }
 
-    /**
-     *
-     */
     override fun getStructMembers(): List<GlslNamedVariable> {
         return emptyList()
     }
 
-
-    /**
-     *
-     */
     override fun getStructMember(memberName: String): GlslNamedVariable? {
         return null
     }
 
-    /**
-     *
-     */
     override fun getBinaryType(other: GlslNamedElement?, operation: String): GlslNamedType? {
         return when (other) {
             is GlslScalar -> this
@@ -48,9 +32,6 @@ abstract class GlslScalar(node: ASTNode) : GlslBuiltinType(node) {
         }
     }
 
-    /**
-     *
-     */
     override fun canCast(other: IElementType?): Boolean {
         if (other == null) return false
         val implicitConversions = GlslDefinitions.SCALARS[other]
@@ -58,9 +39,6 @@ abstract class GlslScalar(node: ASTNode) : GlslBuiltinType(node) {
         return implicitConversions?.contains(element) ?: false
     }
 
-    /**
-     *
-     */
     override fun getDimension(): Int {
         return 1
     }

@@ -9,45 +9,26 @@ import glsl.psi.interfaces.GlslDeclarationIdentifierWrapper
 import glsl.psi.interfaces.GlslVariableIdentifier
 import javax.swing.Icon
 
-/**
- *
- */
 abstract class GlslNamedDeclarationIdentifierWrapper(node: ASTNode) : GlslNamedVariableImpl(node) {
 
-    /**
-     *
-     */
     override fun getPsi(): GlslDeclarationIdentifierWrapper {
         return this as GlslDeclarationIdentifierWrapper
     }
 
-    /**
-     *
-     */
     override fun getLookupIcon(): Icon? {
         return null
     }
 
-    /**
-     *
-     */
     override fun getAssociatedType(): GlslNamedType? {
         return null
     }
 
-    /**
-     *
-     */
     override fun getNameIdentifier(): GlslVariableIdentifier? {
         return getPsi().variableIdentifier
     }
 
-    /**
-     *
-     */
     override fun getHighlightTextAttr(): TextAttributesKey {
         return GlslTextAttributes.VARIABLE_TEXT_ATTR
     }
-
 
 }

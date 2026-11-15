@@ -14,39 +14,23 @@ import glsl.plugin.utils.GlslBuiltinUtils
 import glsl.plugin.utils.GlslUtils.createScalarTypeElement
 import glsl.psi.interfaces.GlslBuiltinTypeVector
 
-
-/**
- *
- */
 abstract class GlslVector(node: ASTNode) : GlslBuiltinType(node) {
     override var isPrimitive = true
 
-    /**
-     *
-     */
     override fun getPsi(): GlslBuiltinTypeVector {
         return firstChild as GlslBuiltinTypeVector
     }
 
-    /**
-     *
-     */
     override fun getStructMembers(): List<GlslNamedVariable> {
         val vectors = GlslBuiltinUtils.getVecStructs(project)[name]
         val vectorMembers = vectors?.values?.toList()
         return vectorMembers ?: emptyList()
     }
 
-    /**
-     *
-     */
     override fun getStructMember(memberName: String): GlslNamedVariable? {
         return getStructMembers().find { it.name == memberName }
     }
 
-    /**
-     *
-     */
     override fun getScalarType(): GlslNamedType? {
         val typeText = name?.first()
         return when (typeText) {
@@ -59,9 +43,6 @@ abstract class GlslVector(node: ASTNode) : GlslBuiltinType(node) {
         }
     }
 
-    /**
-     *
-     */
     override fun getBinaryType(other: GlslNamedElement?, operation: String): GlslNamedType? {
         when (other) {
             is GlslScalar -> return this
@@ -76,9 +57,6 @@ abstract class GlslVector(node: ASTNode) : GlslBuiltinType(node) {
         return null
     }
 
-    /**
-     *
-     */
     override fun getDimension(): Int {
         val lastChar = name?.last()
         return when (lastChar) {
@@ -89,9 +67,6 @@ abstract class GlslVector(node: ASTNode) : GlslBuiltinType(node) {
         }
     }
 
-    /**
-     *
-     */
     override fun canCast(other: IElementType?): Boolean {
         if (other == null) return false
         val implicitConversions = GlslDefinitions.VECTORS[other]

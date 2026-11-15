@@ -2,48 +2,29 @@ package glsl.data
 
 import glsl.GlslTypes.*
 
-
-/**
- *
- */
 enum class ShaderType {
     GLSL, VERT, TESC, TESE, GEOM, FRAG, COMP
 }
 
 object GlslDefinitions {
 
-    /**
-     *
-     */
     const val BACKSLASH = "\\"
 
-    /**
-     *
-     */
     val VERSIONS = arrayOf(
         "110", "120", "130", "140", "150", "330", "340", "350", "360", "370", "380", "390", "400", "410", "420",
         "430", "440", "450", "460"
     )
 
-    /**
-     *
-     */
     val VERSION_MODES = arrayOf(
         "core", "compatibility", "es"
     )
 
-    /**
-     *
-     */
     val VEC_MAT_CONSTRUCTORS = listOf(
         "bvec2", "bvec3", "bvec4", "vec2", "vec3", "vec4", "ivec2", "ivec3", "ivec4", "uvec2", "uvec3", "uvec4", "dvec2", "dvec3",
         "dvec4", "mat2", "mat3", "mat4", "mat2x2", "mat2x3", "mat2x4", "mat3x2", "mat3x3", "mat3x4", "mat4x2", "mat4x3", "mat4x4",
         "dmat2", "dmat3", "dmat4", "dmat2x2", "dmat2x3", "dmat2x4", "dmat3x2", "dmat3x3", "dmat3x4", "dmat4x2", "dmat4x3", "dmat4x4",
     )
 
-    /**
-     *
-     */
     val SCALARS = mapOf(
         INT to listOf(INT, UINT, FLOAT, DOUBLE),
         UINT to listOf(UINT, FLOAT, DOUBLE),
@@ -52,9 +33,6 @@ object GlslDefinitions {
         BOOL to null,
     )
 
-    /**
-     *
-     */
     val VECTORS = mapOf(
         VEC2 to listOf(VEC2, DVEC2),
         IVEC2 to listOf(IVEC2, VEC2, DVEC2),
@@ -75,9 +53,6 @@ object GlslDefinitions {
         F64VEC2 to null, F64VEC3 to null, F64VEC4 to null,
     )
 
-    /**
-     *
-     */
     val MATRICES = mapOf(
         MAT2 to listOf(DMAT2),
         MAT3 to listOf(DMAT3),
@@ -100,6 +75,4 @@ object GlslDefinitions {
         F64MAT4X4 to null,
     )
 }
-
-
 

@@ -22,58 +22,34 @@ import javax.swing.Icon
 abstract class GlslNamedBlockStructure(node: ASTNode) : GlslNamedTypeImpl(node), GlslNamedType {
     override var isPrimitive = false
 
-    /**
-     *
-     */
     override fun getName(): String {
         return getPsi().typeName.getName()
     }
 
-    /**
-     *
-     */
     override fun getAssociatedType(): GlslNamedType? {
         return this
     }
 
-    /**
-     *
-     */
     override fun getPsi(): GlslBlockStructure {
         return this as GlslBlockStructure
     }
 
-    /**
-     *
-     */
     override fun getHighlightTextAttr(): TextAttributesKey {
         return GlslTextAttributes.USER_DEFINED_TYPE_TEXT_ATTR
     }
 
-    /**
-     *
-     */
     override fun getLookupElement(returnTypeText: String?): LookupElement? {
         return null // TODO
     }
 
-    /**
-     *
-     */
     override fun getLookupIcon(): Icon? {
         return AllIcons.Nodes.Type
     }
 
-    /**
-     *
-     */
     override fun getNameIdentifier(): GlslTypeName {
         return getPsi().typeName
     }
 
-    /**
-     *
-     */
     override fun getStructMembers(): List<GlslNamedVariable> {
         val structDeclarationList = getPsi().structDeclarationList
         val structDeclarators = mutableListOf<GlslStructDeclarator>()
@@ -85,9 +61,6 @@ abstract class GlslNamedBlockStructure(node: ASTNode) : GlslNamedTypeImpl(node),
         return structDeclarators
     }
 
-    /**
-     *
-     */
     override fun getStructMember(memberName: String): GlslNamedVariable? {
         val structDeclarationList = getPsi().structDeclarationList
         for (structDeclaration in structDeclarationList) {
@@ -99,30 +72,18 @@ abstract class GlslNamedBlockStructure(node: ASTNode) : GlslNamedTypeImpl(node),
         return null
     }
 
-    /**
-     *
-     */
     override fun canCast(other: IElementType?): Boolean {
         return false
     }
 
-    /**
-     *
-     */
     override fun typeAsToken(): IElementType? {
         return GlslTypes.USER_TYPE_NAME
     }
 
-    /**
-     *
-     */
     override fun getBinaryType(other: GlslNamedElement?, operation: String): GlslNamedType? {
         return null
     }
 
-    /**
-     *
-     */
     override fun getDimension(): Int {
         return 1
     }

@@ -11,9 +11,6 @@ import glsl.plugin.utils.GlslUtils
 import javax.swing.Icon
 
 interface GlslNamedElement : PsiNameIdentifierOwner {
-    /**
-     *
-     */
     override fun setName(newName: String): PsiElement {
         (nameIdentifier as? GlslIdentifier)?.replaceElementName(newName)
         return this
@@ -48,23 +45,14 @@ interface GlslNamedElement : PsiNameIdentifierOwner {
 
 abstract class GlslNamedElementImpl(node: ASTNode) : ASTWrapperPsiElement(node), GlslNamedElement {
 
-    /**
-    *
-    */
     override fun getName(): String? {
         return nameIdentifier?.text ?: return ""
     }
 
-    /**
-    *
-    */
     override fun getTextOffset(): Int {
         return nameIdentifier?.textOffset ?: super.getTextOffset()
     }
 
-    /**
-    *
-    */
     override fun getLookupElement(returnTypeText: String?): LookupElement? {
         val lookupString = getPsi().name ?: return null
         return GlslUtils.createLookupElement(lookupString, icon = getLookupIcon(), withBoldness = true)

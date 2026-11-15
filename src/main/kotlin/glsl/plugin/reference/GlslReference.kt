@@ -20,7 +20,6 @@ import glsl.psi.interfaces.GlslPpIncludeDeclaration
 import glsl.psi.interfaces.GlslStatement
 import java.util.Stack
 
-
 class StopLookupException : Exception()
 
 enum class FilterType {
@@ -28,9 +27,6 @@ enum class FilterType {
     CONTAINS
 }
 
-/**
- *
- */
 abstract class GlslReference(private val element: GlslIdentifier, textRange: TextRange) : PsiReferenceBase<GlslIdentifier>(element, textRange) {
     abstract fun doResolve(filterType: FilterType = EQUALS)
     abstract fun shouldResolve(): Boolean
@@ -43,9 +39,6 @@ abstract class GlslReference(private val element: GlslIdentifier, textRange: Tex
     val resolvedReferences = arrayListOf<GlslNamedElement>()
     protected val includedFilesStack = Stack<PsiFile>()
 
-    /**
-     *
-     */
     override fun handleElementRename(newElementName: String): PsiElement? {
         return element.replaceElementName(newElementName)
     }
@@ -69,9 +62,6 @@ abstract class GlslReference(private val element: GlslIdentifier, textRange: Tex
         return elementParent
     }
 
-    /**
-     *
-     */
     protected fun findReferenceInElement(namedElement: GlslNamedElement?) {
         val namedElementName = namedElement?.name ?: return
         val elementName = element.getName()
@@ -84,9 +74,6 @@ abstract class GlslReference(private val element: GlslIdentifier, textRange: Tex
         }
     }
 
-    /**
-     *
-     */
     protected fun findReferenceInElementList(namedElementsList: List<GlslNamedVariable>?, addAll: Boolean = false) {
         if (namedElementsList == null) return
         if (addAll) {
@@ -98,9 +85,6 @@ abstract class GlslReference(private val element: GlslIdentifier, textRange: Tex
         }
     }
 
-    /**
-     *
-     */
     protected fun findReferenceInElementMap(namedElementsMap: Map<String, GlslNamedVariable>) {
         if (namedElementsMap.isEmpty()) return
         val elementName = element.getName()
@@ -117,9 +101,6 @@ abstract class GlslReference(private val element: GlslIdentifier, textRange: Tex
         }
     }
 
-    /**
-     *
-     */
     protected fun lookupInIncludeDeclaration(relativeTo: VirtualFile?, ppIncludeDeclaration: GlslPpIncludeDeclaration?) {
         if (ppIncludeDeclaration == null) return
         includedFilesStack.push(ppIncludeDeclaration.containingFile)

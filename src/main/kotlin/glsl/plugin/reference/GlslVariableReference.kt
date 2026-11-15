@@ -41,9 +41,6 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         reference.resolvedReferences.firstOrNull() as? GlslNamedVariable
     }
 
-    /**
-     *
-     */
     override fun resolve(): GlslNamedVariable? {
         return try {
             val project = element.project
@@ -60,9 +57,6 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         }
     }
 
-    /**
-     *
-     */
     override fun getVariants(): Array<LookupElement> {
         val project = element.project
         if (project.isDisposed) return emptyArray()
@@ -72,9 +66,6 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         return resolvedReferences.mapNotNull { it.getLookupElement() }.toTypedArray()
     }
 
-    /**
-     *
-     */
     override fun resolveMany(): List<GlslNamedElement> {
         val project = element.project
         if (project.isDisposed) return emptyList()
@@ -86,9 +77,6 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         return resolvedReferences
     }
 
-    /**
-     *
-     */
     override fun doResolve(filterType: FilterType) {
         val project = element.project
         if (project.isDisposed) return
@@ -115,9 +103,6 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         }
     }
 
-    /**
-     *
-     */
     override fun shouldResolve(): Boolean {
         if (currentFilterType == CONTAINS && element.isEmpty()) {
             return true
@@ -128,9 +113,6 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         )
     }
 
-    /**
-     *
-     */
     override fun lookupInExternalDeclaration(relativeTo: VirtualFile?, externalDeclaration: GlslExternalDeclaration?) {
         if (externalDeclaration == null) return
         lookupInFunctionDeclarator(externalDeclaration.functionDefinition?.functionDeclarator, false)
@@ -138,9 +120,6 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         lookupInPpStatement(relativeTo, externalDeclaration.ppStatement)
     }
 
-    /**
-     *
-     */
     private fun lookupInGlobalScope(file: VirtualFile?, externalDeclaration: GlslExternalDeclaration?) {
         if (externalDeclaration == null) return
         var prevSibling = getPrevSiblingOfType(externalDeclaration, GlslExternalDeclaration::class.java)
@@ -150,9 +129,6 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         }
     }
 
-    /**
-     *
-     */
     private fun lookupInFunctionScope(file: VirtualFile?, statement: GlslStatement?): GlslExternalDeclaration? {
         if (statement == null) return null
         var prevScope = lookupInInnerScope(file, statement)
@@ -173,9 +149,6 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         return null
     }
 
-    /**
-     *
-     */
     private fun lookupInInnerScope(file: VirtualFile?, statement: GlslStatement?): PsiElement? {
         if (statement == null) return null
         if (statement.iterationStatement != null) {
@@ -190,9 +163,6 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         return getParentScope(statement)
     }
 
-    /**
-     *
-     */
     private fun lookupInBuiltin() {
         findReferenceInElementMap(getShaderVariables(project))
         findReferenceInElementMap(getBuiltinConstants(project))
@@ -202,9 +172,6 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         }
     }
 
-    /**
-     *
-     */
     private fun resolveFunction(func: GlslFunctionDeclarator) {
         if (element.text.contains("IntellijIdeaRulezzz")) {
             findReferenceInElement(func)
@@ -223,9 +190,6 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         }
     }
 
-    /**
-     *
-     */
     private fun lookupInDeclaration(declaration: GlslDeclaration?) {
         if (declaration == null) return
         lookupInSingleDeclaration(declaration.singleDeclaration)
@@ -235,9 +199,6 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         findReferenceInElementList(declaration.initDeclaratorVariableList)
     }
 
-    /**
-     *
-     */
     private fun lookupInSingleDeclaration(singleDeclaration: GlslSingleDeclaration?) {
         if (singleDeclaration == null) return
         if (singleDeclaration.variableIdentifier != null) {
@@ -260,9 +221,6 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         }
     }
 
-    /**
-     *
-     */
     private fun lookupInFunctionDeclarator(functionDeclarator: GlslFunctionDeclarator?, withParams: Boolean) {
         if (functionDeclarator == null) return
         resolveFunction(functionDeclarator)
@@ -271,9 +229,6 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         }
     }
 
-    /**
-     *
-     */
     private fun lookupInPpStatement(file: VirtualFile?, ppStatement: GlslPpStatement?) {
         if (ppStatement == null) return
         lookupInIncludeDeclaration(file, ppStatement.ppIncludeDeclaration)
@@ -316,9 +271,6 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         }
     }
 
-    /**
-     *
-     */
     private fun lookupInPostfixStructMember() {
         var postfixStructMember: GlslPostfixStructMember? = null
         if (element.parent is GlslPostfixStructMember) {
@@ -332,9 +284,6 @@ class GlslVariableReference(private val element: GlslIdentifier, textRange: Text
         }
     }
 
-    /**
-     *
-     */
     private fun getPostfixIdentifier(postfixExpr: GlslPostfixExpr?): GlslVariable? {
         return when (postfixExpr) {
             is GlslPrimaryExpr -> postfixExpr.variableIdentifier as? GlslVariable

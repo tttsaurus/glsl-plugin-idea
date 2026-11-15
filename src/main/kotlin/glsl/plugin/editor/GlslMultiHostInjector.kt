@@ -30,9 +30,6 @@ class GlslTemplateContext : TemplateContextType( "GLSL") {
 }
 
 class GlslMultiHostInjector : MultiHostInjector {
-    /**
-     *
-     */
     override fun getLanguagesToInject(registrar: MultiHostRegistrar, context: PsiElement) {
         when (context) {
             is HtmlTag -> {
@@ -47,9 +44,6 @@ class GlslMultiHostInjector : MultiHostInjector {
         }
     }
 
-    /**
-     *
-     */
     override fun elementsToInjectIn(): MutableList<out Class<out PsiElement>> {
         return mutableListOf(XmlTag::class.java)
     }

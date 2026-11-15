@@ -48,7 +48,6 @@ class GlslReferenceTest : BasePlatformTestCase() {
         assertNull(resolve)
     }
 
-
     fun testReference5() {
         val reference = myFixture.getReferenceAtCaretPosition("ReferenceFile5.glsl")
         val resolve = reference?.resolve()

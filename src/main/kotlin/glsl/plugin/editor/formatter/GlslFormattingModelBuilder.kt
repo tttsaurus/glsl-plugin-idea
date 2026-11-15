@@ -17,13 +17,8 @@ import glsl.data.GlslTokenSets.SHIFT_OPERATORS
 import glsl.data.GlslTokenSets.UNARY_OPERATORS
 import glsl.plugin.language.GlslLanguage
 
-
 class GlslFormattingModelBuilder : FormattingModelBuilder {
 
-
-    /**
-     *
-     */
     override fun createModel(formattingContext: FormattingContext): FormattingModel {
         val codeStyleSettings = formattingContext.codeStyleSettings
         val glslBlock = GlslBlock(
@@ -36,9 +31,6 @@ class GlslFormattingModelBuilder : FormattingModelBuilder {
         return createFormattingModelForPsiFile(formattingContext.containingFile, glslBlock, codeStyleSettings)
     }
 
-    /**
-     *
-     */
     private fun createSpaceBuilder(settings: CodeStyleSettings): SpacingBuilder {
         val commonSettings = settings.getCommonSettings(GlslLanguage.INSTANCE.id)
         commonSettings.SPACE_BEFORE_COLON = false

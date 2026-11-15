@@ -32,9 +32,6 @@ class GlslTypeReference(private val element: GlslType, textRange: TextRange) : G
         reference.resolvedReferences.firstOrNull() as? GlslNamedType
     }
 
-    /**
-     *
-     */
     override fun resolve(): GlslNamedType? {
         return try {
             val project = element.project
@@ -51,9 +48,6 @@ class GlslTypeReference(private val element: GlslType, textRange: TextRange) : G
         }
     }
 
-    /**
-     *
-     */
     override fun getVariants(): Array<LookupElement> {
         val project = element.project
         if (project.isDisposed) return emptyArray()
@@ -63,9 +57,6 @@ class GlslTypeReference(private val element: GlslType, textRange: TextRange) : G
         return resolvedReferences.mapNotNull { it.getLookupElement() }.toTypedArray()
     }
 
-    /**
-     *
-     */
     override fun resolveMany(): List<GlslNamedElement> {
         val project = element.project
         if (project.isDisposed) return emptyList()
@@ -77,9 +68,6 @@ class GlslTypeReference(private val element: GlslType, textRange: TextRange) : G
         return resolvedReferences
     }
 
-    /**
-     *
-     */
     override fun doResolve(filterType: FilterType) {
         val project = element.project
         if (project.isDisposed) return
@@ -103,17 +91,11 @@ class GlslTypeReference(private val element: GlslType, textRange: TextRange) : G
         }
     }
 
-    /**
-     *
-     */
     override fun shouldResolve(): Boolean {
         if (currentFilterType == CONTAINS && element.isEmpty()) return true
         return element.getDeclaration() == null
     }
 
-    /**
-     *
-     */
     private fun resolveType(): GlslNamedType? {
         var statementPrevSibling = getParentOfType(element, GlslStatement::class.java)
         while (statementPrevSibling != null) {
@@ -128,17 +110,11 @@ class GlslTypeReference(private val element: GlslType, textRange: TextRange) : G
         return null
     }
 
-    /**
-     *
-     */
     override fun lookupInExternalDeclaration(relativeTo: VirtualFile?, externalDeclaration: GlslExternalDeclaration?) {
         lookupInIncludeDeclaration(relativeTo, externalDeclaration?.ppStatement?.ppIncludeDeclaration)
         resolveDeclarationType(externalDeclaration?.declaration)
     }
 
-    /**
-     *
-     */
     private fun resolveDeclarationType(declaration: GlslDeclaration?) {
         if (declaration == null) return
         val structSpecifier = declaration.singleDeclaration?.typeSpecifier?.structSpecifier

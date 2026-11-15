@@ -13,15 +13,8 @@ import glsl.plugin.utils.GlslBuiltinUtils.isBuiltinFunction
 import glsl.plugin.utils.GlslBuiltinUtils.isBuiltinShaderVariable
 import glsl.psi.interfaces.GlslLayoutQualifierId
 
-
-/**
- *
- */
 class GlslHighlightingAnnotator : Annotator {
 
-    /**
-     *
-     */
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
         val project = element.project
         if (project.isDisposed) return
@@ -45,9 +38,6 @@ class GlslHighlightingAnnotator : Annotator {
 
     }
 
-    /**
-     *
-     */
     private fun setReferenceHighlighting(element: GlslNamedElement, holder: AnnotationHolder) {
         val textAttr = element.getHighlightTextAttr()
         holder.newSilentAnnotation(HighlightSeverity.INFORMATION)
@@ -55,9 +45,6 @@ class GlslHighlightingAnnotator : Annotator {
             .create()
     }
 
-    /**
-     *
-     */
     private fun setDeclarationHighlighting(element: GlslIdentifier, holder: AnnotationHolder) {
         if (element.parent is GlslLayoutQualifierId) {
             createAnnotation(holder, GlslTextAttributes.VARIABLE_TEXT_ATTR)
@@ -67,9 +54,6 @@ class GlslHighlightingAnnotator : Annotator {
         createAnnotation(holder, declaration.getHighlightTextAttr())
     }
 
-    /**
-     *
-     */
     private fun createAnnotation(holder: AnnotationHolder, textAttr: TextAttributesKey?) {
         if (textAttr == null) return
         holder.newSilentAnnotation(HighlightSeverity.INFORMATION)

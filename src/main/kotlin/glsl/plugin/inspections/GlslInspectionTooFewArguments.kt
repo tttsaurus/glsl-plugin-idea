@@ -8,15 +8,9 @@ import glsl.plugin.utils.GlslUtils.getType
 import glsl.psi.interfaces.GlslConstructorCall
 import glsl.psi.interfaces.GlslVisitor
 
-/**
- *
- */
 class GlslInspectionTooFewArguments : GlslInspection() {
     override val errorMessageCode = GlslErrorCode.TOO_FEW_ARGUMENTS_CONSTRUCTOR
 
-    /**
-     *
-     */
     override fun buildVisitor(holder: ProblemsHolder, isOnTheFly: Boolean): PsiElementVisitor {
         return object : GlslVisitor() {
             override fun visitConstructorCall(constructorCall: GlslConstructorCall) {

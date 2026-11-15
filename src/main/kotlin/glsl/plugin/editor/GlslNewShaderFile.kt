@@ -12,9 +12,6 @@ private const val NEW_SHADER_DIALOG_TEXT = "Shader File"
 class GlslNewShaderFile
     : CreateFileFromTemplateAction(NEW_SHADER_DIALOG_TEXT, "", GlslIcon.PLUGIN_FILE_ICON), DumbAware {
 
-    /**
-    *
-    */
     override fun buildDialog(project: Project, directory: PsiDirectory, builder: CreateFileFromTemplateDialog.Builder) {
         builder.setTitle(NEW_SHADER_DIALOG_TEXT)
             .addKind("Shader (.glsl)", GlslIcon.PLUGIN_FILE_ICON, "shader-template")
@@ -26,23 +23,14 @@ class GlslNewShaderFile
             .addKind("Compute (.comp)", GlslIcon.PLUGIN_FILE_ICON, "cs-template")
     }
 
-    /**
-    *
-    */
     override fun getActionName(directory: PsiDirectory?, newName: String, templateName: String?): String {
         return NEW_SHADER_DIALOG_TEXT
     }
 
-    /**
-    *
-    */
     override fun hashCode(): Int {
         return 0
     }
 
-    /**
-    *
-    */
     override fun equals(other: Any?): Boolean {
         return other is GlslNewShaderFile
     }

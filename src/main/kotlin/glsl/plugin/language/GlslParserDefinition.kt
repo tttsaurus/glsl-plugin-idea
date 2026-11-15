@@ -14,21 +14,12 @@ import com.intellij.psi.tree.TokenSet
 import glsl.GlslTypes
 import glsl.data.GlslTokenSets
 
-/**
- *
- */
 class GlslParserDefinition : ParserDefinition {
 
-    /**
-     *
-     */
     override fun createLexer(project: Project): Lexer {
         return GlslLexer(project)
     }
 
-    /**
-     *
-     */
     override fun createParser(project: Project?): PsiParser {
         return GlslParserAdapter()
     }
@@ -37,37 +28,22 @@ class GlslParserDefinition : ParserDefinition {
         return GlslIFileElementType
     }
 
-    /**
-     *
-     */
     override fun getWhitespaceTokens(): TokenSet {
         return TokenSet.create(TokenType.WHITE_SPACE)
     }
 
-    /**
-     *
-     */
     override fun getCommentTokens(): TokenSet {
         return GlslTokenSets.COMMENTS
     }
 
-    /**
-     *
-     */
     override fun getStringLiteralElements(): TokenSet {
         return TokenSet.create(GlslTypes.STRING_LITERAL)
     }
 
-    /**
-     *
-     */
     override fun createElement(node: ASTNode?): PsiElement {
         return GlslTypes.Factory.createElement(node)
     }
 
-    /**
-     *
-     */
     override fun createFile(viewProvider: FileViewProvider): PsiFile {
         return GlslFile(viewProvider)
     }

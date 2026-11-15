@@ -45,7 +45,6 @@ FRACTIONAL2={DIGITS}{EXPONENT}
 FLOATCONSTANT=({FRACTIONAL}|{FRACTIONAL2}){FLOATING_SUFFIX_FLOAT}?
 DOUBLECONSTANT=({FRACTIONAL}|{FRACTIONAL2}){FLOATING_SUFFIX_DOUBLE}?
 
-
 BOOLCONSTANT=false|true
 STRING_LITERAL=(\"([^\"\\]|\\.)*\")
 IDENTIFIER=[a-zA-Z_]+\w*
@@ -67,7 +66,6 @@ PP_LINE="#line"
 MACRO_LINE="__LINE__"
 MACRO_FILE="__FILE__"
 MACRO_VERSION="__VERSION__"
-
 
 %%
 
@@ -103,7 +101,6 @@ MACRO_VERSION="__VERSION__"
   {PP_PRAGMA}                      { return PP_PRAGMA; }
   "#"                              { return HASH; }
   {MACRO_PLACEHOLDER}              { return MACRO_PLACEHOLDER; }
-
 
   ";"                              { return SEMICOLON; }
   ","                              { return COMMA; }

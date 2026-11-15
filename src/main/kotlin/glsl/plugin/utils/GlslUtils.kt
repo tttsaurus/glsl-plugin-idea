@@ -12,6 +12,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
+import com.intellij.testFramework.LightVirtualFileBase
 import glsl.GlslTypes.BUILTIN_TYPE_SCALAR
 import glsl.GlslTypes.BUILTIN_TYPE_VECTOR
 import glsl.data.ShaderType
@@ -30,14 +31,8 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import javax.swing.Icon
 
-/**
- *
- */
 object GlslUtils {
 
-    /**
-     *
-     */
     @JvmStatic
     fun getResourceFileAsString(path: String): String? {
         val file = GlslUtils::class.java.classLoader.getResourceAsStream(path)
@@ -48,10 +43,6 @@ object GlslUtils {
         return null
     }
 
-
-    /**
-     *
-     */
     @JvmStatic
     fun createLookupElement(
         lookupString: String,
@@ -70,9 +61,6 @@ object GlslUtils {
             .withPsiElement(psiElement)
     }
 
-    /**
-     *
-     */
     @JvmStatic
     fun createLookupElements(
         tokenList: List<String>,
@@ -83,9 +71,6 @@ object GlslUtils {
         return tokenList.map { createLookupElement(it, insertHandler, icon, returnTypeText) }
     }
 
-    /**
-     *
-     */
     @JvmStatic
     fun getFunctionLookupElement(func: GlslFunctionDeclarator, icon: Icon?): LookupElement {
         var typeQualifierStr = func.typeQualifier?.text ?: ""
@@ -111,9 +96,6 @@ object GlslUtils {
         )
     }
 
-    /**
-     *
-     */
     @JvmStatic
     fun getFunctionInsertHandler(hasParams: Boolean = true): InsertHandler<LookupElement> {
         return InsertHandler { context, item ->
@@ -131,9 +113,6 @@ object GlslUtils {
         }
     }
 
-    /**
-     *
-     */
     @JvmStatic
     fun getVectorInsertHandler(): InsertHandler<LookupElement> {
         return InsertHandler { context, item ->
@@ -150,43 +129,29 @@ object GlslUtils {
         }
     }
 
-    /**
-     *
-     */
     @JvmStatic
     fun getVirtualFile(targetPathString: String?, baseFile: VirtualFile?, project: Project?): VirtualFile? {
         if (project == null || baseFile == null || targetPathString == null) return null
-        return baseFile.parent?.findFileByRelativePath(targetPathString)
+        val directory = if (baseFile.isDirectory) baseFile else baseFile.parent
+        return directory?.findFileByRelativePath(targetPathString)?.takeUnless { it.isDirectory }
     }
 
-    /**
-     *
-     */
     @JvmStatic
     fun getTokenSetAsStrings(tokenSet: TokenSet): Array<String> {
         return tokenSet.types.map { it.toString() }.toTypedArray()
     }
 
-    /**
-     *
-     */
     @JvmStatic
     fun removeArgsFromFuncText(funcText: String): String {
         return funcText.replace("\\(.*\\)".toRegex(), "")
     }
 
-    /**
-     *
-     */
     @JvmStatic
     fun isShaderFile(element: PsiElement): Boolean {
         val extension = element.containingFile.virtualFile.extension
         return enumValues<ShaderType>().any { extension?.lowercase() == it.name.lowercase() }
     }
 
-    /**
-     *
-     */
     @JvmStatic
     fun getType(typeSpecifier: GlslTypeSpecifier?): GlslNamedType? {
         if (typeSpecifier == null) return null
@@ -206,9 +171,6 @@ object GlslUtils {
         return null
     }
 
-    /**
-     *
-     */
     @JvmStatic
     fun createScalarTypeElement(elementType: IElementType, text: String): GlslBuiltinTypeScalarImpl {
         val composite = ASTFactory.composite(BUILTIN_TYPE_SCALAR)
@@ -223,9 +185,6 @@ object GlslUtils {
         return GlslBuiltinTypeVectorImpl(composite)
     }
 
-    /**
-     *
-     */
     @JvmStatic
     fun getPathStringFromInclude(includeDeclaration: GlslPpIncludeDeclaration): String? {
         return if (includeDeclaration.stringLiteral != null) {
@@ -236,5 +195,10 @@ object GlslUtils {
             return null
         }
     }
-}
 
+    @JvmStatic
+    fun PsiElement.getRealVirtualFile(): VirtualFile? {
+        val file = containingFile?.viewProvider?.virtualFile
+        return (file as? LightVirtualFileBase)?.originalFile ?: file
+    }
+}

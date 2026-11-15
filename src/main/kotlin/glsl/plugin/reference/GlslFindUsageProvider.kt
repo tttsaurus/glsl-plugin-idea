@@ -12,52 +12,31 @@ import glsl.plugin.psi.named.GlslNamedElement
 import glsl.plugin.utils.GlslBuiltinUtils
 import glsl.psi.interfaces.GlslStructSpecifier
 
-/**
- *
- */
 class GlslFindUsageProvider : FindUsagesProvider {
 
-    /**
-    *
-    */
     override fun getWordsScanner(): WordsScanner {
         return DefaultWordsScanner(GlslLexer(), IDENTIFIERS, COMMENTS, TokenSet.EMPTY)
     }
 
-    /**
-    *
-    */
     override fun canFindUsagesFor(psiElement: PsiElement): Boolean {
         if (psiElement !is GlslNamedElement) return false
         val structSpecifier = psiElement.parent?.parent as? GlslStructSpecifier ?: return true
         return !GlslBuiltinUtils.isBuiltin(structSpecifier.project, structSpecifier.name)
     }
 
-    /**
-    *
-    */
     override fun getHelpId(psiElement: PsiElement): String? {
         return null
     }
 
-    /**
-    *
-    */
     override fun getType(element: PsiElement): String {
         if (element !is GlslNamedElement) return ""
         return "declaration"
     }
 
-    /**
-    *
-    */
     override fun getDescriptiveName(element: PsiElement): String {
         return if (element !is GlslNamedElement || element.name == null) "" else element.name!!
     }
 
-    /**
-    *
-    */
     override fun getNodeText(element: PsiElement, useFullName: Boolean): String {
         return if (element !is GlslNamedElement) "" else element.text
     }
