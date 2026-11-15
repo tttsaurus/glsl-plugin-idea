@@ -3,6 +3,7 @@ package glsl.plugin.language
 import com.intellij.lexer.LexerBase
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.readText
 import com.intellij.psi.TokenType.WHITE_SPACE
 import com.intellij.psi.tree.IElementType
 import com.intellij.util.containers.addIfNotNull
@@ -36,7 +37,7 @@ private enum class MacroExpansionMode {
  */
 class GlslLexer(private val project: Project? = null, private val baseFile: VirtualFile? = null) : LexerBase() {
     private val lexer = _GlslLexer()
-    private val helperLexer = _GlslLexer()
+    private val helperLexerPool = ArrayList<_GlslLexer>()
 
     private var myTokenType: IElementType? = null
     private var myText = ""
@@ -93,6 +94,15 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
         return MacroExpansionMode.DUMMY_IDENTIFIER
     }
 
+    private fun getHelperLexer() = helperLexerPool.removeLastOrNull() ?: _GlslLexer()
+
+    private fun freeHelperLexer(lexer: _GlslLexer) {
+        lexer.reset(null, 0, 0, YYINITIAL)
+        if (helperLexerPool.size < 4) {
+            helperLexerPool.add(lexer)
+        }
+    }
+
     /**
      *
      */
@@ -140,6 +150,7 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
      *
      */
     override fun getTokenType(): IElementType? {
+        //TODO this can trigger in huge shader files even when there's no recursion
         if (inEndlessRecursion()) return null
         return myTokenType
     }
@@ -196,18 +207,34 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
     }
 
     /**
-     * TODO: Make recursive lookup in include. Currently it only looks in first level.
+     *
      */
     private fun addIncludeUserTypes() {
-        val path = myTokenText.replace("\"", "")
+        addIncludeRecursiveStep(lexer, baseFile, myTokenText, HashSet<VirtualFile>(), 0)
+    }
+
+    private fun addIncludeRecursiveStep(outLexer: _GlslLexer, relativeTo: VirtualFile?, tokenText: String, encounteredFiles: MutableSet<VirtualFile>, depth: Int) {
+        val path = tokenText.replace("\"", "")
         if (path.isEmpty()) return
-        val vf = getVirtualFile(path, baseFile, project) ?: return
-        val fileText = String(vf.contentsToByteArray())
+        val vf = getVirtualFile(path, relativeTo, project) ?: return
+        if (encounteredFiles.contains(vf) || depth > 256) //256 unique recursive includes is crazy enough anyways
+            return
+        encounteredFiles.add(vf)
+        val fileText = vf.readText()
+        val helperLexer = getHelperLexer()
         helperLexer.reset(fileText, 0, fileText.length, YYINITIAL)
         while (true) {
-            helperLexer.advance() ?: break
+            val helperTokenType = helperLexer.advance()
+            if (helperTokenType == null) {
+                break
+            }
+            if (helperTokenType in listOf(STRING_LITERAL, INCLUDE_PATH)) {
+                val helperTokenText = helperLexer.yytext().toString()
+                addIncludeRecursiveStep(helperLexer, vf, helperTokenText, encounteredFiles, depth + 1)
+            }
         }
-        lexer.userDefinedTypes.addAll(helperLexer.userDefinedTypes)
+        outLexer.userDefinedTypes.addAll(helperLexer.userDefinedTypes)
+        freeHelperLexer(helperLexer)
     }
 
     /**
@@ -357,8 +384,10 @@ class GlslLexer(private val project: Project? = null, private val baseFile: Virt
      *
      */
     private fun getMacroType(): IElementType? {
+        val helperLexer = getHelperLexer()
         helperLexer.reset(myText, tokenEnd, bufferEnd, YYINITIAL)
         val nextToken = helperLexer.advance()
+        freeHelperLexer(helperLexer)
         if (nextToken == LEFT_PAREN) {
             lexer.yybegin(MACRO_FUNC_DEFINITION_STATE)
             return MACRO_FUNCTION

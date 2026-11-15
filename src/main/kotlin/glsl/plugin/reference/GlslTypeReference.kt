@@ -3,20 +3,25 @@ package glsl.plugin.reference
 import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiInvalidElementAccessException
 import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.impl.source.resolve.ResolveCache.AbstractResolver
 import com.intellij.psi.util.PsiTreeUtil.getParentOfType
 import com.intellij.psi.util.PsiTreeUtil.getPrevSiblingOfType
+import com.intellij.psi.util.findParentOfType
 import glsl.plugin.psi.GlslType
 import glsl.plugin.psi.named.GlslNamedElement
 import glsl.plugin.psi.named.GlslNamedType
 import glsl.plugin.reference.FilterType.CONTAINS
+import glsl.plugin.utils.GlslUtils.getRealVirtualFile
 import glsl.psi.interfaces.GlslDeclaration
 import glsl.psi.interfaces.GlslExternalDeclaration
 import glsl.psi.interfaces.GlslStatement
 
 class GlslTypeReference(private val element: GlslType, textRange: TextRange) : GlslReference(element, textRange) {
+
+    private var currentFile: VirtualFile? = null
 
     private val resolver = AbstractResolver<GlslTypeReference, GlslNamedType> { reference, _ ->
         val project = reference.element.project
@@ -37,6 +42,7 @@ class GlslTypeReference(private val element: GlslType, textRange: TextRange) : G
             if (!element.isValid) return null
 
             if (!shouldResolve()) return null
+            currentFile = element.getRealVirtualFile()
             val resolveCache = ResolveCache.getInstance(project)
             return resolveCache.resolveWithCaching(this, resolver, true, false)
         } catch (e: Throwable) {
@@ -80,13 +86,20 @@ class GlslTypeReference(private val element: GlslType, textRange: TextRange) : G
         if (!element.isValid) return
 
         try {
+            currentFile = element.getRealVirtualFile()
             resolvedReferences.clear()
             currentFilterType = filterType
+            val statement = element.findParentOfType<GlslStatement>()
+            if (statement != null && statement.declaration?.singleDeclaration?.typeSpecifier?.typeName?.reference == this) {
+                val fakeVar = GlslVariableReference(element, rangeInElement)
+                fakeVar.doResolve(filterType)
+                resolvedReferences.addAll(fakeVar.resolvedReferences)
+            }
             resolveType()
         } catch (_: PsiInvalidElementAccessException) {
-            includeFiles.clear()
+            includedFilesStack.clear()
         } catch (_: StopLookupException) {
-            includeFiles.clear()
+            includedFilesStack.clear()
         }
     }
 
@@ -110,7 +123,7 @@ class GlslTypeReference(private val element: GlslType, textRange: TextRange) : G
         var externalDeclaration = getParentOfType(element, GlslExternalDeclaration::class.java)
         while (externalDeclaration != null) {
             externalDeclaration = getPrevSiblingOfType(externalDeclaration, GlslExternalDeclaration::class.java)
-            lookupInExternalDeclaration(externalDeclaration)
+            lookupInExternalDeclaration(currentFile, externalDeclaration)
         }
         return null
     }
@@ -118,8 +131,8 @@ class GlslTypeReference(private val element: GlslType, textRange: TextRange) : G
     /**
      *
      */
-    override fun lookupInExternalDeclaration(externalDeclaration: GlslExternalDeclaration?) {
-        lookupInIncludeDeclaration(externalDeclaration?.ppStatement?.ppIncludeDeclaration)
+    override fun lookupInExternalDeclaration(relativeTo: VirtualFile?, externalDeclaration: GlslExternalDeclaration?) {
+        lookupInIncludeDeclaration(relativeTo, externalDeclaration?.ppStatement?.ppIncludeDeclaration)
         resolveDeclarationType(externalDeclaration?.declaration)
     }
 

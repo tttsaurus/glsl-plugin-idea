@@ -12,8 +12,9 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
+import com.intellij.testFramework.LightVirtualFileBase
+import com.intellij.util.asSafely
 import glsl.GlslTypes.BUILTIN_TYPE_SCALAR
-import glsl.data.ShaderType
 import glsl.plugin.psi.named.GlslNamedType
 import glsl.plugin.psi.named.types.builtins.GlslBuiltinRest
 import glsl.plugin.psi.named.types.builtins.GlslMatrix
@@ -154,7 +155,9 @@ object GlslUtils {
     @JvmStatic
     fun getVirtualFile(targetPathString: String?, baseFile: VirtualFile?, project: Project?): VirtualFile? {
         if (project == null || baseFile == null || targetPathString == null) return null
-        return baseFile.parent?.findFileByRelativePath(targetPathString)
+        val file = (if (baseFile.isDirectory) baseFile else baseFile.parent)
+            ?.findFileByRelativePath(targetPathString) ?: return null
+        return file.takeUnless { it.isDirectory }
     }
 
     /**
@@ -171,15 +174,6 @@ object GlslUtils {
     @JvmStatic
     fun removeArgsFromFuncText(funcText: String): String {
         return funcText.replace("\\(.*\\)".toRegex(), "")
-    }
-
-    /**
-     *
-     */
-    @JvmStatic
-    fun isShaderFile(element: PsiElement): Boolean {
-        val extension = element.containingFile.virtualFile.extension
-        return enumValues<ShaderType>().any { extension?.lowercase() == it.name.lowercase() }
     }
 
     /**
@@ -226,6 +220,12 @@ object GlslUtils {
         } else {
             return null
         }
+    }
+
+    @JvmStatic
+    fun PsiElement.getRealVirtualFile(): VirtualFile? {
+        val vf = this.containingFile?.viewProvider?.virtualFile
+        return vf.asSafely<LightVirtualFileBase>()?.originalFile ?: vf
     }
 }
 
