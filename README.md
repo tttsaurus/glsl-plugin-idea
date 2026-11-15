@@ -1,4 +1,4 @@
-> This fork aims to provide patches to fix bugs/runtime exceptions.
+> This is a fork of [glsl-plugin-idea](https://github.com/rmordechay/glsl-plugin-idea) and aims to provide patches to fix bugs/runtime exceptions.
 
 ## Development environment
 
