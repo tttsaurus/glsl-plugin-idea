@@ -1,10 +1,11 @@
-> This is a fork of [glsl-plugin-idea](https://github.com/rmordechay/glsl-plugin-idea) and aims to provide patches to fix bugs/runtime exceptions.
+> Since [glsl-plugin-idea](https://github.com/rmordechay/glsl-plugin-idea) upstream is abandoned and now adding random
+> slopped features, this fork is created to provide patches to fix bugs/runtime exceptions for `1.1.6`.
 
 ## Development environment
 
 Use JDK 25 for development and the Gradle JVM in IntelliJ IDEA.
-The plugin compiles against IntelliJ IDEA Community 2025.1 and emits Java 21
-bytecode for IDEs starting at build 242 (2024.2). The sandbox uses the IDE's
+The plugin compiles against IntelliJ IDEA Community 2024.1.7 and emits Java 17
+bytecode for IDEs starting at build 241 (2024.1). The sandbox uses the IDE's
 bundled JetBrains Runtime.
 
 Build versions and plugin metadata are in `gradle.properties`. Dependency and
@@ -35,6 +36,7 @@ To clean and regenerate just the grammar sources, run `./gradlew generateGrammar
 - 2025.1.7.1
 - 2024.3.7.1
 - 2024.2.6
+- 2024.1.7
 
 Verifier reports are written under `build/reports/pluginVerifier`.
 

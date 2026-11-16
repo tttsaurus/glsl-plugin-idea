@@ -25,7 +25,7 @@ class GlslElementTypeRegistryTest : BasePlatformTestCase() {
         )
     }
 
-    // getAllocatedTypesCount() is package-private in the supported 2025.1 SDK.
+    // Use the public API rather than package-private registry counters.
     private fun registeredGlslTypes(): Int =
         IElementType.enumerate { it.language == GlslLanguage.INSTANCE }.size
 

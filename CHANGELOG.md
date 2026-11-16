@@ -1,5 +1,9 @@
 # GLSL Plugin Changelog
 
+## [1.1.6-hotfix4]
+### Features
+- Support IntelliJ Platform build 241 (2024.1), with Java 17 bytecode and a 2024.1.7 verifier target
+
 ## [1.1.6-hotfix3]
 ### Fixed
 - Fixed vec array & bool type inference

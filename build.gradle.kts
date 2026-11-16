@@ -16,22 +16,22 @@ plugins {
 group = providers.gradleProperty("pluginGroup").get()
 version = providers.gradleProperty("pluginVersion").get()
 
-// Use JDK 25 for development while keeping the plugin runnable on the target IDEs' JBR 21.
+// Use JDK 25 for development while keeping the plugin runnable on 2024.1's JBR 17
 kotlin {
     jvmToolchain(25)
     compilerOptions {
-        jvmTarget = JvmTarget.JVM_21
-        freeCompilerArgs.add("-Xjdk-release=21")
+        jvmTarget = JvmTarget.JVM_17
+        freeCompilerArgs.add("-Xjdk-release=17")
     }
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 tasks.withType<JavaCompile>().configureEach {
-    options.release = 21
+    options.release = 17
 }
 
 repositories {
@@ -90,6 +90,7 @@ intellijPlatform {
             create("IC", "2025.1.7.1")
             create("IC", "2024.3.7.1")
             create("IC", "2024.2.6")
+            create("IC", "2024.1.7")
         }
     }
 }

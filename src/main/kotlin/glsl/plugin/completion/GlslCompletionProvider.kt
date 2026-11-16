@@ -10,8 +10,6 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.TokenType
 import com.intellij.psi.util.elementType
 import com.intellij.psi.util.prevLeaf
-import com.intellij.psi.util.endOffset
-import com.intellij.psi.util.startOffset
 import com.intellij.util.ProcessingContext
 import glsl.GlslTypes
 import glsl.data.GlslDefinitions
@@ -101,8 +99,9 @@ class GlslIncludeStatementCompletion : GlslCompletionProvider() {
         val s = lookupElement.lookupString
         val elem = context.file.findElementAt(context.startOffset)
         if (elem != null && elem.elementType == GlslTypes.STRING_LITERAL) {
-            context.document.replaceString(elem.startOffset + 1, elem.endOffset - 1, s)
-            context.editor.caretModel.moveToOffset(elem.startOffset + 1 + s.length)
+            val range = elem.textRange
+            context.document.replaceString(range.startOffset + 1, range.endOffset - 1, s)
+            context.editor.caretModel.moveToOffset(range.startOffset + 1 + s.length)
         } else {
             context.document.replaceString(context.startOffset, context.selectionEndOffset, s)
             context.editor.caretModel.moveToOffset(context.startOffset + s.length)
